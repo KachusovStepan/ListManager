@@ -24,20 +24,20 @@ public class ListManagerApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(ListManagerApplication.class, args);
-		Configuration conf = new Configuration().configure().addAnnotatedClass(User.class);
-		ServiceRegistry sr = new StandardServiceRegistryBuilder().applySettings(conf.getProperties()).build();
-		SessionFactory sf = conf.buildSessionFactory(sr);
-		Session session = sf.openSession();
-
-		Transaction ts = session.beginTransaction();
-		team = (List<String>)session.createCriteria(User.class).list().stream().map(x -> ((User)x).getUser_name()).collect(Collectors.toList());
-		ts.commit();
+//		Configuration conf = new Configuration().configure().addAnnotatedClass(User.class);
+//		ServiceRegistry sr = new StandardServiceRegistryBuilder().applySettings(conf.getProperties()).build();
+//		SessionFactory sf = conf.buildSessionFactory(sr);
+//		Session session = sf.openSession();
+//
+//		Transaction ts = session.beginTransaction();
+//		team = (List<String>)session.createCriteria(User.class).list().stream().map(x -> ((User)x).getUser_name()).collect(Collectors.toList());
+//		ts.commit();
 	}
 
-	@GetMapping("/hello")
-	public String hello(@RequestParam(value = "name", defaultValue = "World") String name) {
-		System.out.println(name);
-		return "Hello, " + name + "!" + String.join(",", team);
-	}
+//	@GetMapping("/hello")
+//	public String hello(@RequestParam(value = "name", defaultValue = "World") String name) {
+//		System.out.println(name);
+//		return "Hello, " + name + "!" + String.join(",", team);
+//	}
 }
 
