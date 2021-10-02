@@ -6,7 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 @Entity
-public class Status {
+public class Role {
     @Id
     @GeneratedValue
     private Long id;
@@ -14,9 +14,9 @@ public class Status {
     private String name;
     private String description;
 
-    public Status() {}
+    public Role() {}
 
-    public Status(String name, String description) {
+    public Role(String name, String description) {
         this.name = name;
         this.description = description;
     }

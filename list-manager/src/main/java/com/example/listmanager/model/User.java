@@ -2,6 +2,7 @@ package com.example.listmanager.model;
 
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -11,27 +12,28 @@ public class User {
     @GeneratedValue
     private Long id;
 
-    private String name;
-    @ManyToOne
-    private Status status;
+    private String username;
     private String email;
-
-    public List<ItemList> getLists() {
-        return lists;
-    }
-
-    public void setLists(List<ItemList> lists) {
-        this.lists = lists;
-    }
+    private String password;
+    @ManyToMany
+    private List<Role> roles = new ArrayList<>();
 
     @OneToMany
     private List<ItemList> lists;
 
     public User() {}
 
-    public User(String name, Status status, String email) {
-        this.name = name;
-        this.status = status;
+    public User(Long id, String username, String email, String password, List<Role> roles) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.roles = roles;
+    }
+
+    public User(String name, List<Role> roles, String email) {
+        this.username = name;
+        this.roles = roles;
         this.email = email;
     }
 
@@ -43,21 +45,22 @@ public class User {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return username;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUsername(String name) {
+        this.username = name;
     }
 
-    public Status getStatus() {
-        return status;
+    public List<ItemList> getLists() {
+        return lists;
     }
 
-    public void setStatus(Status status) {
-        this.status = status;
+    public void setLists(List<ItemList> lists) {
+        this.lists = lists;
     }
+
 
     public String getEmail() {
         return email;
@@ -67,10 +70,26 @@ public class User {
         this.email = email;
     }
 
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     @Override
     public String toString() {
-        return "User{"+ "id = " + this.id + ", name = " + this.name +
-                "', status = "+ this.status.toString() +
+        return "User{"+ "id = " + this.id + ", name = " + this.username +
+                "', roles = "+ this.roles.toString() +
                 "', email = " + this.email +"'}";
     }
 }

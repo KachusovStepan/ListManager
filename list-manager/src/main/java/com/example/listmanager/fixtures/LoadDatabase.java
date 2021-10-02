@@ -22,15 +22,19 @@ public class LoadDatabase {
             ItemListRepository itemListRepository,
             ItemRepository itemRepository,
             ItemStatusRepository itemStatusRepository,
-            StatusRepository statusRepository,
+            RoleRepository statusRepository,
             UserRepository userRepository
     ) {
         return args -> {
             log.info("Preloading fixtures...");
-            Status status = statusRepository.save(new Status("Unknown", "Not authorized"));
-            log.info("Preloading " + status);
-            User user = userRepository.save(new User("Adam", status, "unknown@unknown.com"));
-            log.info("Preloading " + user);
+            Role role = statusRepository.save(new Role("NOT_AUTHORIZED", "Not authorized"));
+            log.info("Preloading " + role);
+            List<Role> roles = new ArrayList<>();
+            roles.add(role);
+            User user1 = userRepository.save(new User("Adam", new ArrayList<Role>(), "adam@unknown.com"));
+            User user2 = userRepository.save(new User("default-user", roles, "unknown@unknown.com"));
+            log.info("Preloading " + user1);
+            log.info("Preloading " + user1);
             // Creating lists
             Category category = categoryRepository.save(new Category("ToDo"));
             log.info("Preloading " + category);
@@ -46,7 +50,7 @@ public class LoadDatabase {
             List<ItemList> lists = new ArrayList<>();
             lists.add(list);
 
-            user.setLists(lists);
+            user1.setLists(lists);
             log.info("Fixtures loaded");
         };
     }
