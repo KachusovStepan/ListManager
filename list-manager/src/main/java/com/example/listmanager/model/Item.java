@@ -1,17 +1,13 @@
 package com.example.listmanager.model;
 
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 @Entity
 public class Item {
     @Id
     @GeneratedValue
     private Long id;
-
     private int number;
     private int priority = 1;
     private String description;
