@@ -24,6 +24,12 @@ public class ItemList {
         this.category = category;
     }
 
+    public ItemList(String name, Category category, List<Item> items) {
+        this.name = name;
+        this.category = category;
+        this.items = items;
+    }
+
     public List<Item> getItems() {
         return items;
     }

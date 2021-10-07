@@ -21,7 +21,7 @@ import java.util.List;
 
 @Service
 @Transactional // to not save entities explicitly
-public class UserServiceImpl implements UserService, UserDetailsService {
+public class UserServiceImpl implements IUserService, UserDetailsService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
