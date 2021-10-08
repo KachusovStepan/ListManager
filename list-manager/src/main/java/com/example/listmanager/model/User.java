@@ -1,6 +1,8 @@
 package com.example.listmanager.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +18,7 @@ public class User {
     private String email;
     private String password;
     @ManyToMany
+    @JsonIgnore
     private List<Role> roles = new ArrayList<>();
 
     @OneToMany

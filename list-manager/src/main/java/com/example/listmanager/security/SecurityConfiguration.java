@@ -64,8 +64,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers(POST, "/api/users/**").hasAnyAuthority("ROLE_ADMIN");
         http.authorizeRequests().anyRequest().authenticated();
         http.addFilter(customAuthenticationFilter);
-        http.addFilterBefore(new com.example.listmanager.filter.CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
-        http.addFilterBefore(new CustomCORSFilter(), com.example.listmanager.filter.CustomAuthorizationFilter.class);
+        http.addFilterBefore(new com.example.listmanager.security.filters.CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new CustomCORSFilter(), com.example.listmanager.security.filters.CustomAuthorizationFilter.class);
     }
 
 

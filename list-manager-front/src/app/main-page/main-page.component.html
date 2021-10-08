@@ -1,0 +1,37 @@
+<div class="contrainer-fluid d-flex flex-column h-100">
+  <div class="row">
+    <div class="col bg-dark text-white">
+      <button
+          *ngIf="!isAuthenticated"
+          class="btn btn-danger m-2" style="float: right"
+          routerLink="/user/register">
+        Register
+      </button>
+      <button *ngIf="!isAuthenticated"
+          class="btn btn-info m-2" style="float: right"
+          routerLink="/user/main">
+        Log in
+      </button>
+
+      <button *ngIf="isAuthenticated"
+          class="btn btn-danger m-2" style="float: right"
+          (click)="logOut()">
+        Log out
+      </button>
+      <button *ngIf="isAuthenticated"
+          class="btn btn-info m-2" style="float: right"
+          routerLink="/user/main">
+        User
+      </button>
+
+      <navigation activeLink="Home" [disabledLinks]="linksToDisable"></navigation>
+      <!-- <a class="navbar-brand">List Manager</a> -->
+    </div>
+  </div>
+
+  <div class="main-title-container row h-100 flex-glow1">
+    <div class="col d-flex flex-column justify-content-center">
+      <h2 class="main-title align-middle p-2 btn btn-info text-white">Try <span class="app-name">List Manager</span></h2>
+    </div>
+  </div>
+</div>

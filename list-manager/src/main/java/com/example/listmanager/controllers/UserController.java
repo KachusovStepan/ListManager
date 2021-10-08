@@ -3,6 +3,7 @@ package com.example.listmanager.controllers;
 import com.example.listmanager.model.ItemList;
 import com.example.listmanager.model.User;
 import com.example.listmanager.services.IUserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +27,11 @@ public class UserController {
 //    }
 
     @GetMapping("user")
+//    @CrossOrigin(origins = "http://localhost:4200")
     ResponseEntity<User> getCurrentUser(Principal principal) {
+        if (principal == null) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         String userName = principal.getName();
         User user = this.userService.getUser(userName);
         if (user == null) {
@@ -49,6 +54,9 @@ public class UserController {
 
     @GetMapping("user/lists")
     ResponseEntity<List<ItemList>> getUserLists(Principal principal) {
+        if (principal == null) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         String userName = principal.getName();
         User user = this.userService.getUser(userName);
         if (user == null) {

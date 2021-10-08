@@ -44,9 +44,9 @@ public class LoadDatabase {
             IUserService userService
     ) {
         return args -> {
-            userService.saveRole(new Role(null, "ROLE_USER"));
-            userService.saveRole(new Role(null, "ROLE_MANAGER"));
-            userService.saveRole(new Role(null, "ROLE_ADMIN"));
+            userService.saveRole(new Role("ROLE_USER", "General user"));
+            userService.saveRole(new Role("ROLE_MANAGER", "General user with acces to some user lists"));
+            userService.saveRole(new Role("ROLE_ADMIN", "Can do everything"));
 
             userService.saveUser(new User(null, "shiny", "shiny@admin.com", "1111", new ArrayList<>()));
             userService.addRoleToUser("shiny", "ROLE_USER");
@@ -74,10 +74,17 @@ public class LoadDatabase {
                     "To Do", "Agenda", "Classes", "Team meeting"
             );
 
-            ItemList il = GenerateItemList(listService, 10, categories, itemStatuses, taskNames, listNames);
-
+//            ItemList il = GenerateItemList(listService, 10, categories, itemStatuses, taskNames, listNames);
+            List<ItemList> itemLists = Arrays.asList(
+                    GenerateItemList(listService, 10, categories, itemStatuses, taskNames, listNames),
+                    GenerateItemList(listService, 7, categories, itemStatuses, taskNames, listNames),
+                    GenerateItemList(listService, 4, categories, itemStatuses, taskNames, listNames),
+                    GenerateItemList(listService, 12, categories, itemStatuses, taskNames, listNames),
+                    GenerateItemList(listService, 2, categories, itemStatuses, taskNames, listNames)
+            );
             List<User> users = Arrays.asList(
-                    userService.saveUser(new User("Adam", "adam@example.com","1234", Arrays.asList(il)))
+//                    userService.saveUser(new User("Adam", "adam@example.com","1234", Arrays.asList(il)))
+                    userService.saveUser(new User("Adam", "adam@example.com","1234", itemLists))
 //                    userService.saveUser(new User("Bany", "bany@example.com","1234", Arrays.asList(lists.get(3), lists.get(4)))),
 //                    userService.saveUser(new User("Dany", "dany@example.com","1234", Arrays.asList(lists.get(5), lists.get(6), lists.get(7), lists.get(8))))
             );

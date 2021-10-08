@@ -1,9 +1,13 @@
 package com.example.listmanager.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import java.util.List;
 
 @Entity
 public class Role {
@@ -13,6 +17,18 @@ public class Role {
 
     private String name;
     private String description;
+
+    public List<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<User> users) {
+        this.users = users;
+    }
+
+    @ManyToMany(mappedBy = "roles")
+    @JsonIgnore
+    private List<User> users;
 
     public Role() {}
 

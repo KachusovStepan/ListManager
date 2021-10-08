@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -25,6 +26,7 @@ import java.util.List;
 
 @SpringBootApplication
 @RestController
+//@EnableSwagger2
 public class ListManagerApplication {
 
 	private static List<String> team = new ArrayList<String>();

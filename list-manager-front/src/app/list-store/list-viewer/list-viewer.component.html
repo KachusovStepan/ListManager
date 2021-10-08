@@ -1,0 +1,37 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col bg-dark text-white">
+      <a class="navbar-brand">LIST MANAGER</a>
+    </div>
+  </div>
+</div>
+
+<!-- <h4 class="bg-success">Place Holder</h4> -->
+
+<div class="container-fluid">
+  <div class="row">
+    <h2>
+      Name: {{listManager.list.name}}
+    </h2>
+    <h4>
+      Category: {{listManager.list.category?.name}}
+    </h4>
+    <div clas="container-fluid" *ngFor="let item of listManager.list.items">
+      <div class="row">
+        <div class="col-1">
+          {{item.number}}
+        </div>
+        <div class="col-7">
+          {{item.description}}
+        </div>
+        <div class="col-4">
+          {{item.status?.name}}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="text-center">
+    <button class="btn btn-secondary m-1" (click)="goBack()">Go back</button>
+    <button class="btn btn-primary m-1">Edit</button>
+  </div>
+</div>
