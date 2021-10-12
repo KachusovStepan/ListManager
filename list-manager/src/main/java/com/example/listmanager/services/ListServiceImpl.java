@@ -11,6 +11,7 @@ import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+
 @Service
 @Transactional // to not save entities explicitly
 public class ListServiceImpl implements IListService {
@@ -83,5 +84,10 @@ public class ListServiceImpl implements IListService {
     @Override
     public List<ItemStatus> getItemStatuses() {
         return itemStatusRepository.findAll();
+    }
+
+    @Override
+    public List<ItemList> getItemLists() {
+        return itemListRepository.findAll();
     }
 }

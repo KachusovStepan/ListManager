@@ -3,6 +3,8 @@ package com.example.listmanager.controllers;
 import com.example.listmanager.model.ItemList;
 import com.example.listmanager.model.User;
 import com.example.listmanager.services.IUserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,31 +12,28 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.util.List;
 
+
 @RequestMapping("/api")
-//@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 public class UserController {
     private final IUserService userService;
-
+    private static final Logger log = LoggerFactory.getLogger(UserController.class);
     public UserController(IUserService userService) {
         this.userService = userService;
     }
 
-//    @PostMapping("/login")
-//    @CrossOrigin(origins = "*")
-//    public String login() {
-//        return "Success";
-//    }
-
     @GetMapping("user")
-//    @CrossOrigin(origins = "http://localhost:4200")
     ResponseEntity<User> getCurrentUser(Principal principal) {
+        log.info("getCurrentUser");
         if (principal == null) {
+            log.info("Principal == null");
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         String userName = principal.getName();
+        log.info("Principal.Name == " + userName);
         User user = this.userService.getUser(userName);
         if (user == null) {
+            log.info("user not found in db");
             return ResponseEntity.notFound().build();
         }
 
@@ -43,8 +42,10 @@ public class UserController {
 
     @PostMapping("register")
     ResponseEntity<User> registerUser(@RequestBody User user) {
+        log.info("registerUser name: " + user.getUsername() + " pass: " + user.getPassword());
         User userFound = this.userService.getUser(user.getUsername());
         if (userFound != null) {
+            log.info("User with this name already exists");
             return ResponseEntity.badRequest().build();
         }
         User savedUser = this.userService.saveUser(user);
@@ -54,24 +55,29 @@ public class UserController {
 
     @GetMapping("user/lists")
     ResponseEntity<List<ItemList>> getUserLists(Principal principal) {
+        log.info("getUserLists");
         if (principal == null) {
+            log.info("Principal == null");
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         String userName = principal.getName();
         User user = this.userService.getUser(userName);
         if (user == null) {
+            log.info("user with name " + userName + " not found in db");
             return ResponseEntity.notFound().build();
         }
-
+        log.info("Returning Ok with " + user.getLists().size() + " elements");
         return ResponseEntity.ok().body(user.getLists());
     }
 
     @GetMapping("/users")
-    List<User> getAllUsers() { return userService.getUsers(); }
-
-//    @GetMapping("/user")
-//    User GetUserByName(@RequestParam(defaultValue = "unknown") String name) { return userRepository.findByUsername(name); }
+    List<User> getAllUsers() {
+        List<User> users = userService.getUsers();
+        log.info("getAllUsers Ok with " + users.size() + " elements");
+        return users;
+    }
 }
+
 
 class ResponseSimpleInfo {
     String status;

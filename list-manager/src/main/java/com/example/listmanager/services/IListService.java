@@ -8,6 +8,7 @@ import com.example.listmanager.model.ItemStatus;
 
 import java.util.List;
 
+
 public interface IListService {
     ItemList saveList(ItemList list);
     Item saveItem(Item item);
@@ -18,4 +19,5 @@ public interface IListService {
     ItemStatus getItemStatus(String name);
     List<Category> getListCategories();
     List<ItemStatus> getItemStatuses();
+    List<ItemList> getItemLists();
 }

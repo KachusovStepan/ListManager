@@ -75,6 +75,7 @@ public class ListManagerApplication {
 
 	@GetMapping("/login")
 	public String getLoggingPage() throws IOException {
+		// FIXME: now using json body, html form probably send form body
 		return new String(Files.readAllBytes(Paths.get("H:\\IMKN\\java\\project_list_manager\\ListManager\\list-manager\\src\\main\\resources\\static\\login.html")));
 
 	}

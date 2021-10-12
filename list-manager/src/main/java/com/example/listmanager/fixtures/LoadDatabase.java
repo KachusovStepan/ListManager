@@ -44,6 +44,7 @@ public class LoadDatabase {
             IUserService userService
     ) {
         return args -> {
+            log.info("Started loading fixtures...");
             userService.saveRole(new Role("ROLE_USER", "General user"));
             userService.saveRole(new Role("ROLE_MANAGER", "General user with acces to some user lists"));
             userService.saveRole(new Role("ROLE_ADMIN", "Can do everything"));
