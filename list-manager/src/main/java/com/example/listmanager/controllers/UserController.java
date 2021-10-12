@@ -2,6 +2,7 @@ package com.example.listmanager.controllers;
 
 import com.example.listmanager.model.ItemList;
 import com.example.listmanager.model.User;
+import com.example.listmanager.services.IListService;
 import com.example.listmanager.services.IUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,9 +18,11 @@ import java.util.List;
 @RestController
 public class UserController {
     private final IUserService userService;
+    private final IListService listService;
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
-    public UserController(IUserService userService) {
+    public UserController(IUserService userService, IListService listService) {
         this.userService = userService;
+        this.listService = listService;
     }
 
     @GetMapping("user")
@@ -68,6 +71,33 @@ public class UserController {
         }
         log.info("Returning Ok with " + user.getLists().size() + " elements");
         return ResponseEntity.ok().body(user.getLists());
+    }
+
+    @PostMapping("user/lists")
+    ResponseEntity<ItemList> saveUserList(Principal principal, @RequestBody ItemList itemList) {
+        log.info("saveUserList");
+        if (principal == null) {
+            log.info("Principal == null");
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        String userName = principal.getName();
+        User user = this.userService.getUser(userName);
+        if (user == null) {
+            log.info("user with name " + userName + " not found in db");
+            return ResponseEntity.notFound().build();
+        }
+        ItemList savedList = listService.trySaveItemList(itemList);
+        if (savedList == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        listService.addListToUser(userName, savedList);
+        if (savedList.getItems() != null) {
+
+            log.info("saved list Ok with " + savedList.getItems().size() + " elements");
+        } else {
+            log.info("saved list Ok with no elements");
+        }
+        return ResponseEntity.ok().body(savedList);
     }
 
     @GetMapping("/users")

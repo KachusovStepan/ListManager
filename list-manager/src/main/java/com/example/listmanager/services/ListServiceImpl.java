@@ -5,11 +5,15 @@ import com.example.listmanager.repos.CategoryRepository;
 import com.example.listmanager.repos.ItemListRepository;
 import com.example.listmanager.repos.ItemRepository;
 import com.example.listmanager.repos.ItemStatusRepository;
+import org.hibernate.cache.spi.support.AbstractReadWriteAccess;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 
 @Service
@@ -38,8 +42,93 @@ public class ListServiceImpl implements IListService {
     @Override
     public ItemList saveList(ItemList list) {
         // FIXME: Check if it will save nested entity
+//        ItemList listFromRepository = itemListRepository.getById(list.getId());
+//        if (listFromRepository == null) {
+//            tryPrepareItemListCompounds(list, listFromRepository);
+//            return listFromRepository;
+//        }
+//        ItemList newItemList = new ItemList();
+//        tryPrepareItemListCompounds(list, newItemList);
         return itemListRepository.save(list);
     }
+
+    @Override
+    public ItemList trySaveItemList(ItemList newList) {
+        ItemList resultList;
+        boolean listCreated = false;
+        if (newList.getId() != null) {
+            resultList = itemListRepository.getById(newList.getId());
+            if (resultList == null) {
+                return null;
+            }
+        } else {
+            listCreated = true;
+            resultList = new ItemList();
+        }
+        resultList.setName(newList.getName());
+        Category category = categoryRepository.findByName(newList.getCategory().getName());
+        resultList.setCategory(category);
+        List<Item> newItems = newList.getItems();
+        for (Item newItem : newItems) {
+            Item resultItem;
+            boolean itemCreated = false;
+            if (newItem.getId() != null) {
+                Optional<Item> optionalItem = resultList.getItems().stream()
+                        .filter(i -> i.getId() == newItem.getId()).findFirst();
+                if (optionalItem.isEmpty()) {
+                    return null;
+                }
+                resultItem = optionalItem.get();
+            } else {
+                itemCreated = true;
+                resultItem = new Item();
+            }
+            resultItem.setNumber(newItem.getNumber());
+            resultItem.setPriority(newItem.getPriority());
+            resultItem.setDescription(newItem.getDescription());
+            ItemStatus itemStatus = itemStatusRepository.findByName(newItem.getStatus().getName());
+            if (itemStatus == null) {
+                itemStatus = itemStatusRepository.findByName("ToDO");
+            }
+            resultItem.setStatus(itemStatus);
+
+            if (itemCreated) {
+                itemRepository.save(resultItem);
+            }
+        }
+
+        if (listCreated) {
+            itemListRepository.save(resultList);
+        }
+        return resultList;
+    }
+
+    @Override
+    public void addListToUser(String username, ItemList list) {
+        User user = userService.getUser(username);
+        user.getLists().add(list);
+    }
+
+//    public boolean tryPrepareItemListCompounds(ItemList list, ItemList resList) {
+//        Category category = categoryRepository.findByName(list.getCategory().getName());
+//        resList.setCategory(category);
+//        List<Item> items = list.getItems();
+//        List<Item> resItems = resList.getItems();
+//        Stream<Item> resItemsStream = resItems.stream();
+//        if(items != null) {
+//            for(Item item : items) {
+//                Long itemId = item.getId();
+//                if (itemRepository.existsById(itemId)) {
+//                    if (resItemsStream.anyMatch(i -> i.getId() == itemId)) {
+//                        // change
+//                    } else {
+//                        // error
+//                        return false;
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     @Override
     public Item saveItem(Item item) {

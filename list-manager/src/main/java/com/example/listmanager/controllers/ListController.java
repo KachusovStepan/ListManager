@@ -6,10 +6,12 @@ import java.util.Optional;
 
 
 import com.example.listmanager.repos.ItemListRepository;
+import com.example.listmanager.repos.UserRepository;
 import com.example.listmanager.services.IListService;
 import com.example.listmanager.services.IUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,11 +25,15 @@ public class ListController {
     private final IUserService userService;
     private final IListService listService;
     private final ItemListRepository itemListRepository;
+    private final UserRepository userRepository;
 
-    public ListController(IUserService userService, IListService listService, ItemListRepository itemListRepository) {
+    public ListController(
+            IUserService userService, IListService listService,
+            ItemListRepository itemListRepository, UserRepository userRepository) {
         this.userService = userService;
         this.listService = listService;
         this.itemListRepository = itemListRepository;
+        this.userRepository = userRepository;
     }
 
     @GetMapping("itemstatuses")
@@ -54,9 +60,6 @@ public class ListController {
 
     @GetMapping("/lists/{id}")
     ResponseEntity<ItemList> getOneList(@PathVariable Long id) {
-//        ItemList list = itemListRepository
-//                .findById(id)
-//                .orElseThrow(() -> new EntityNotFoundException(id, "List"));
         Optional<ItemList> optionalItemList = itemListRepository.findById(id);
         if (optionalItemList.isPresent()) {
             log.info("getOneList Ok found with id: " + id);
@@ -100,4 +103,36 @@ public class ListController {
         log.info("deleteItemList deleted with id: " + id);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/users/{userId}/lists")
+    ResponseEntity<List<ItemList>> getUserLists(@PathVariable Long userId) {
+        User user = userRepository.getById(userId);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+        List<ItemList> userLists = user.getLists();
+        return ResponseEntity.ok().body(userLists);
+    }
+
+//    @PutMapping("/users/{userId}/lists")
+//    ResponseEntity<ItemList> saveUserList(@PathVariable Long userId, @RequestBody ItemList newItemList) {
+//        User user = userRepository.getById(userId);
+//        if (user == null) {
+//            return ResponseEntity.notFound().build();
+//        }
+//        if (newItemList.getId() != null) {
+//            if (itemListRepository.existsById(newItemList.getId())) {
+//                if (user.getLists().stream().anyMatch(il -> il.getId() == newItemList.getId())) {
+//                    ItemList updatedList = listService.saveList(newItemList);
+//                    return ResponseEntity.ok().body(updatedList);
+//                } else {
+//                    return ResponseEntity.status(HttpStatus.CONFLICT).build();
+//                }
+////                ItemList itemListFromRepo = optionalItemList.get();
+//            }
+//        }
+//        ItemList createdItemList = listService.saveList(newItemList);
+//        List<ItemList> userLists = user.getLists();
+//        return ResponseEntity.ok().body(userLists);
+//    }
 }
