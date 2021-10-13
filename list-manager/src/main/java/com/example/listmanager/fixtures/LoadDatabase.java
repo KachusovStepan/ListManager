@@ -62,8 +62,8 @@ public class LoadDatabase {
             );
 
             List<ItemStatus> itemStatuses = Arrays.asList(
-                    listService.saveItemStatus(new ItemStatus("ToDo")),
-                    listService.saveItemStatus(new ItemStatus("InProgress")),
+                    listService.saveItemStatus(new ItemStatus("To Do")),
+                    listService.saveItemStatus(new ItemStatus("In Progress")),
                     listService.saveItemStatus(new ItemStatus("Done"))
             );
 

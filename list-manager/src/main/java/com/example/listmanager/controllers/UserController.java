@@ -121,6 +121,9 @@ public class UserController {
         }
         // delete item if not present ^
         ItemList savedList = listService.saveList(toSave);
+        if (user.getLists().stream().noneMatch(l -> l.getId() == savedList.getId())) {
+            user.getLists().add(savedList);
+        }
         return ResponseEntity.ok().body(savedList);
     }
 
