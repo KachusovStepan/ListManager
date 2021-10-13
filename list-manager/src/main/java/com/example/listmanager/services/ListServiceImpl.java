@@ -41,72 +41,70 @@ public class ListServiceImpl implements IListService {
 
     @Override
     public ItemList saveList(ItemList list) {
-        // FIXME: Check if it will save nested entity
-//        ItemList listFromRepository = itemListRepository.getById(list.getId());
-//        if (listFromRepository == null) {
-//            tryPrepareItemListCompounds(list, listFromRepository);
-//            return listFromRepository;
-//        }
-//        ItemList newItemList = new ItemList();
-//        tryPrepareItemListCompounds(list, newItemList);
         return itemListRepository.save(list);
     }
 
+//    @Override
+//    public ItemList trySaveItemList(ItemList newList) {
+//        ItemList resultList;
+//        boolean listCreated = false;
+//        if (newList.getId() != null) {
+//            resultList = itemListRepository.getById(newList.getId());
+//            if (resultList == null) {
+//                return null;
+//            }
+//        } else {
+//            listCreated = true;
+//            resultList = new ItemList();
+//        }
+//        if (resultList.getItems() == null) {
+//            resultList.setItems(new ArrayList<>());
+//        }
+//        resultList.setName(newList.getName());
+//        Category category = categoryRepository.findByName(newList.getCategory().getName());
+//        resultList.setCategory(category);
+//        List<Item> newItems = newList.getItems();
+//        for (Item newItem : newItems) {
+//            Item resultItem;
+//            boolean itemCreated = false;
+//            if (newItem.getId() != null) {
+//                Optional<Item> optionalItem = resultList.getItems().stream()
+//                        .filter(i -> i.getId() == newItem.getId()).findFirst();
+//                if (optionalItem.isEmpty()) {
+//                    return null;
+//                }
+//                resultItem = optionalItem.get();
+//            } else {
+//                itemCreated = true;
+//                resultItem = new Item();
+//            }
+//            resultItem.setNumber(newItem.getNumber());
+//            resultItem.setPriority(newItem.getPriority());
+//            resultItem.setDescription(newItem.getDescription());
+//            ItemStatus itemStatus = itemStatusRepository.findByName(newItem.getStatus().getName());
+//            if (itemStatus == null) {
+//                itemStatus = itemStatusRepository.findByName("ToDo");
+//            }
+//            resultItem.setStatus(itemStatus);
+//
+//            if (itemCreated) {
+//                itemRepository.save(resultItem);
+//            }
+//            resultList.getItems().add(resultItem);
+//        }
+//
+//        if (listCreated) {
+//            itemListRepository.save(resultList);
+//        }
+//        return resultList;
+//    }
+
     @Override
-    public ItemList trySaveItemList(ItemList newList) {
-        ItemList resultList;
-        boolean listCreated = false;
-        if (newList.getId() != null) {
-            resultList = itemListRepository.getById(newList.getId());
-            if (resultList == null) {
-                return null;
-            }
-        } else {
-            listCreated = true;
-            resultList = new ItemList();
+    public void addListToUser(User user, ItemList list) {
+//        User user = userService.getUser(username);
+        if (user.getLists().stream().noneMatch(l -> list.getId() == l.getId())) {
+            user.getLists().add(list);
         }
-        resultList.setName(newList.getName());
-        Category category = categoryRepository.findByName(newList.getCategory().getName());
-        resultList.setCategory(category);
-        List<Item> newItems = newList.getItems();
-        for (Item newItem : newItems) {
-            Item resultItem;
-            boolean itemCreated = false;
-            if (newItem.getId() != null) {
-                Optional<Item> optionalItem = resultList.getItems().stream()
-                        .filter(i -> i.getId() == newItem.getId()).findFirst();
-                if (optionalItem.isEmpty()) {
-                    return null;
-                }
-                resultItem = optionalItem.get();
-            } else {
-                itemCreated = true;
-                resultItem = new Item();
-            }
-            resultItem.setNumber(newItem.getNumber());
-            resultItem.setPriority(newItem.getPriority());
-            resultItem.setDescription(newItem.getDescription());
-            ItemStatus itemStatus = itemStatusRepository.findByName(newItem.getStatus().getName());
-            if (itemStatus == null) {
-                itemStatus = itemStatusRepository.findByName("ToDO");
-            }
-            resultItem.setStatus(itemStatus);
-
-            if (itemCreated) {
-                itemRepository.save(resultItem);
-            }
-        }
-
-        if (listCreated) {
-            itemListRepository.save(resultList);
-        }
-        return resultList;
-    }
-
-    @Override
-    public void addListToUser(String username, ItemList list) {
-        User user = userService.getUser(username);
-        user.getLists().add(list);
     }
 
 //    public boolean tryPrepareItemListCompounds(ItemList list, ItemList resList) {

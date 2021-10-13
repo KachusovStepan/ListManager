@@ -32,7 +32,8 @@ public class LoadDatabase {
             List<Category> categories, List<ItemStatus> statuses, List<String> tasks, List<String> listNames) {
         List<Item> items = new ArrayList<>();
         for(int i = 0; i < count; i++) {
-            items.add(listService.saveItem(new Item(i, random.nextInt(10), AnyItem(tasks), AnyItem(statuses))));
+//            items.add(listService.saveItem(new Item(i, random.nextInt(10), AnyItem(tasks), AnyItem(statuses))));
+            items.add(new Item(i, random.nextInt(10), AnyItem(tasks), AnyItem(statuses)));
         }
         ItemList list = listService.saveList(new ItemList(AnyItem(listNames), AnyItem(categories), items));
         return list;

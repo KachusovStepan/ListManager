@@ -1,6 +1,8 @@
 package com.example.listmanager.model;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -14,7 +16,8 @@ public class ItemList {
     @ManyToOne
     private Category category;
 
-    @OneToMany
+//    @JsonManagedReference
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Item> items;
 
     public ItemList() {}

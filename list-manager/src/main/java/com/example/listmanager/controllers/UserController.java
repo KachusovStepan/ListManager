@@ -1,7 +1,10 @@
 package com.example.listmanager.controllers;
 
-import com.example.listmanager.model.ItemList;
-import com.example.listmanager.model.User;
+import com.example.listmanager.model.*;
+import com.example.listmanager.repos.CategoryRepository;
+import com.example.listmanager.repos.ItemListRepository;
+import com.example.listmanager.repos.ItemRepository;
+import com.example.listmanager.repos.ItemStatusRepository;
 import com.example.listmanager.services.IListService;
 import com.example.listmanager.services.IUserService;
 import org.slf4j.Logger;
@@ -10,8 +13,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @RequestMapping("/api")
@@ -19,10 +25,28 @@ import java.util.List;
 public class UserController {
     private final IUserService userService;
     private final IListService listService;
+
+    private final ItemListRepository itemListRepository;
+    private final ItemRepository itemRepository;
+    private final CategoryRepository categoryRepository;
+    private final ItemStatusRepository itemStatusRepository;
+
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
-    public UserController(IUserService userService, IListService listService) {
+    public UserController(
+            IUserService userService, IListService listService,
+
+            ItemListRepository itemListRepository,
+            ItemRepository itemRepository,
+            CategoryRepository categoryRepository,
+            ItemStatusRepository itemStatusRepository
+    ) {
         this.userService = userService;
         this.listService = listService;
+
+        this.itemListRepository = itemListRepository;
+        this.itemRepository = itemRepository;
+        this.categoryRepository = categoryRepository;
+        this.itemStatusRepository = itemStatusRepository;
     }
 
     @GetMapping("user")
@@ -74,8 +98,7 @@ public class UserController {
     }
 
     @PostMapping("user/lists")
-    ResponseEntity<ItemList> saveUserList(Principal principal, @RequestBody ItemList itemList) {
-        log.info("saveUserList");
+    ResponseEntity<ItemList> saveUserList(Principal principal, @RequestBody ItemList toSave) {
         if (principal == null) {
             log.info("Principal == null");
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -86,17 +109,18 @@ public class UserController {
             log.info("user with name " + userName + " not found in db");
             return ResponseEntity.notFound().build();
         }
-        ItemList savedList = listService.trySaveItemList(itemList);
-        if (savedList == null) {
-            return ResponseEntity.badRequest().build();
+        // check if it belongs to
+        if (toSave.getId() != null) {
+            if (user.getLists().stream().noneMatch(l -> l.getId() == toSave.getId())) {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
         }
-        listService.addListToUser(userName, savedList);
-        if (savedList.getItems() != null) {
-
-            log.info("saved list Ok with " + savedList.getItems().size() + " elements");
-        } else {
-            log.info("saved list Ok with no elements");
+        toSave.setCategory(categoryRepository.findByName(toSave.getCategory().getName()));
+        for (Item item : toSave.getItems()) {
+            item.setStatus(itemStatusRepository.findByName(item.getStatus().getName()));
         }
+        // delete item if not present ^
+        ItemList savedList = listService.saveList(toSave);
         return ResponseEntity.ok().body(savedList);
     }
 

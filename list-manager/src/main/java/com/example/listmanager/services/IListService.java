@@ -1,18 +1,16 @@
 package com.example.listmanager.services;
 
 
-import com.example.listmanager.model.Category;
-import com.example.listmanager.model.Item;
-import com.example.listmanager.model.ItemList;
-import com.example.listmanager.model.ItemStatus;
+import com.example.listmanager.model.*;
 
 import java.util.List;
 
 
 public interface IListService {
     ItemList saveList(ItemList list);
-    ItemList trySaveItemList(ItemList list);
-    void addListToUser(String username, ItemList list);
+//    ItemList trySaveItemList(ItemList list);
+    void addListToUser(User user, ItemList list);
+//    void addListToUser(String username, ItemList list);
     Item saveItem(Item item);
     Category saveCategory(Category category);
     ItemStatus saveItemStatus(ItemStatus itemStatus);

@@ -1,6 +1,8 @@
 package com.example.listmanager.model;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 
 @Entity
@@ -11,6 +13,7 @@ public class Item {
     private int number;
     private int priority = 1;
     private String description;
+//    @JsonManagedReference
     @ManyToOne
     private ItemStatus status;
 

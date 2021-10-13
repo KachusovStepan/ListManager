@@ -77,20 +77,6 @@ public class ListController {
         return ResponseEntity.created(location).body(savedItemList);
     }
 
-    // TODO: Update list by id
-//    @PutMapping("/lists/{id}")
-//    ItemList replaceItemList(@RequestBody ItemList newItemList, @PathVariable Long id) {
-//        ItemList itemList = listRepository.findById(id)
-//                .map(il -> {
-//                    // il.set...(newItemList.get...());
-//                    return listRepository.save(il);
-//                })
-//                .orElseGet(() -> {
-//                    newItemList.setId(id);
-//                    return listRepository.save(newItemList);
-//                });
-//        return itemList;
-//    }
 
     @DeleteMapping("/lists/{id}")
     ResponseEntity<?> deleteItemList(@PathVariable Long id) {
