@@ -7,6 +7,7 @@ import { AuthComponent } from "./auth/auth.component";
 import { UserComponent } from "./main/user.component";
 import { AuthGuard } from "./auth.guard";
 import { RegisterComponent } from "./register/register.component";
+// import { GeneralModule } from "../general/general.module";
 
 let routing = RouterModule.forChild([
   { path: "auth", component: AuthComponent },

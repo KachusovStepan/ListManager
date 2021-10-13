@@ -5,12 +5,16 @@ import { ListItem } from "./listitem.model";
 import { ItemStatus } from "./itemstatus.model";
 
 import { Observable, from } from "rxjs";
+import { delay } from 'rxjs/internal/operators';
+
+import { IUser } from "./user";
 
 @Injectable()
 export class StaticDataSource {
   private categories: Category[] = [
     new Category(1, "To Do list"),
-    new Category(2, "Grocery list")
+    new Category(2, "Grocery list"),
+    new Category(3, "Classes"),
   ];
   private itemsStatuses: ItemStatus[] = [
     new ItemStatus(1, "To Do"),
@@ -24,12 +28,20 @@ export class StaticDataSource {
   ];
   private lists: List[] = [
     new List(1, "Adam's List", this.categories[0], [this.listItems[0], this.listItems[1], this.listItems[2]]),
-    new List(2, "My List 1", this.categories[0], [this.listItems[0], this.listItems[1]]),
-    new List(3, "My List 2", this.categories[0], [this.listItems[0], this.listItems[1]]),
-    new List(4, "My List 3", this.categories[0], [this.listItems[0], this.listItems[1]]),
-    new List(5, "My List 4", this.categories[0], [this.listItems[0], this.listItems[1]]),
-    new List(6, "My List 5", this.categories[0], [this.listItems[0], this.listItems[1]]),
+    new List(2, "My List 1", this.categories[1], [this.listItems[0], this.listItems[1]]),
+    new List(3, "My List 2", this.categories[0], [this.listItems[0], this.listItems[2]]),
+    new List(4, "My List 3", this.categories[2], [this.listItems[0], this.listItems[1]]),
+    new List(5, "My List 4", this.categories[1], [this.listItems[0], this.listItems[2]]),
+    new List(6, "My List 5", this.categories[2], [this.listItems[0], this.listItems[1]]),
   ];
+
+  public auth_token: string = "";
+  public user: IUser = {
+    id: 1,
+    username: "Adam",
+    email: "a@a.com",
+    lists: [this.lists[0]]
+  };
 
   public getLists(): Observable<List[]> {
     return from([this.lists]);
@@ -41,5 +53,21 @@ export class StaticDataSource {
 
   public getCategories(): Observable<ItemStatus[]> {
     return from([this.categories]);
+  }
+
+  public getUser(): Observable<IUser> {
+    return from([this.user]);
+  }
+
+  public authenticate(user: string, pass: string): Observable<boolean> {
+    return from([user == "Adam" && pass == "1234"]);
+  }
+
+  public register(username: string, pass: string): Observable<boolean> {
+    return from([username != "Adam"]);
+  }
+
+  public saveUsersList(list: List): Observable<boolean> {
+    return from([true]).pipe(delay(1000));
   }
 }

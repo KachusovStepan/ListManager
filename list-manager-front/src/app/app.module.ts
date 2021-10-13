@@ -11,6 +11,7 @@ import { MainPageComponent } from './main-page/main-page.component';
 import { GeneralModule } from './general/general.module';
 import { ModelModule } from './model/model.module';
 
+
 const rotes: Routes = [
   { path: "list-store", component: StoreComponent,
     canActivate: [MainPageFirstGuard]

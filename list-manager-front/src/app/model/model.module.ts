@@ -11,8 +11,9 @@ import { HttpClientModule } from "@angular/common/http";
   imports: [HttpClientModule],
   providers: [
     ListRepository, StaticDataSource, ListManger,
-    // { provide: StaticDataSource, useClass: RestDataSource},
-    RestDataSource, AuthService
+    // { provide: RestDataSource, useClass: StaticDataSource},
+    RestDataSource,
+    AuthService,
   ],
 })
 export class ModelModule { }

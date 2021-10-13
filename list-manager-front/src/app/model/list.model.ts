@@ -5,7 +5,7 @@ export class List {
   public constructor(
     public id?: number,
     public name?: string,
-    public category?: Category,
-    public items?: ListItem[]
+    public category: Category = new Category(),
+    public items: ListItem[] = []
   ) {}
 }

@@ -45,6 +45,7 @@ export class ListRepository {
       console.log("Get data from datasource");
       console.log(this.lists);
       console.log(this.categories);
+      console.log(this.itemStatuses);
     });
   }
 
@@ -80,6 +81,23 @@ export class ListRepository {
 
   public getUser(): IUser | null {
     return this.user;
+  }
+
+  public saveList(list: List): Observable<boolean> {
+    return this.dataSource.saveUsersList(list).pipe(map(result => {
+      if (!this.user) {
+        console.log("REST DATASOURCE: user not set!!!");
+        return false;
+      }
+      if (result === null) {
+        return false;
+      }
+      console.log("Saved list");
+      console.log(result);
+      this.lists.push(result);
+      return true;
+    }
+  ));
   }
 }
 

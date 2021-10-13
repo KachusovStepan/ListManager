@@ -1,23 +1,44 @@
-<div class="container-fluid">
+<!-- <div class="container-fluid">
   <div class="row">
     <div class="col bg-dark text-white">
       <a class="navbar-brand">LIST MANAGER</a>
     </div>
   </div>
-</div>
+</div> -->
 
 <!-- <h4 class="bg-success">Place Holder</h4> -->
 
 <div class="container-fluid">
   <div class="row">
+    <div class="col bg-dark text-white">
+      <button class="btn btn-danger m-2" style="float: right" routerLink="user/main">
+        User
+      </button>
+      <!-- <a class="navbar-brand" routerLink="/main-page">List Manager</a> -->
+      <navigation activeLink="Your Lists"></navigation>
+      <list-summary></list-summary>
+    </div>
+  </div>
+
+  <div class="row">
     <h2>
       Name: {{listManager.list.name}}
+      <span class="badge badge-pill badge-primary float-right"
+          [class.text-warning]="!listManager.Saved"
+          [class.text-success]="listManager.Saved"
+          style="float: right">
+        {{listManager.Saved ? "Saved" : "Not Saved"}}
+      </span>
     </h2>
     <h4>
       Category: {{listManager.list.category?.name}}
     </h4>
     <div clas="container-fluid" *ngFor="let item of listManager.list.items">
-      <div class="row">
+      <div class="row"
+        [class.btn-outline-warning]="item.status?.name == 'To Do'"
+        [class.btn-outline-info]="item.status?.name == 'In Progress'"
+        [class.btn-outline-success]="item.status?.name == 'Done'"
+      >
         <div class="col-1">
           {{item.number}}
         </div>
@@ -32,6 +53,7 @@
   </div>
   <div class="text-center">
     <button class="btn btn-secondary m-1" (click)="goBack()">Go back</button>
-    <button class="btn btn-primary m-1">Edit</button>
+    <!-- <button class="btn btn-primary m-1" routerLink="/list-store/list-edit">Edit</button> -->
+    <button class="btn btn-primary m-1" (click)="editList()">Edit</button>
   </div>
 </div>

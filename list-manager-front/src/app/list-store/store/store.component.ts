@@ -65,7 +65,15 @@ export class StoreComponent {
 
   public setListToListManager(list: List) {
     this.listManager.setList(list);
+    this.listManager.Saved = true;
     // console.log("Trying go to " + "list-store/list-viewer");
     this.router.navigate(["list-store/list-viewer"]);
+  }
+
+  public addNewList() {
+    let newList = new List();
+    this.listManager.setList(newList);
+    this.listManager.Saved = false;
+    this.router.navigate(["list-store/list-edit"]);
   }
 }

@@ -53,6 +53,7 @@ export class RestDataSource {
       console.log("REST DATASOURCE: repsonse: ");
       console.log(response);
       // console.log(response.status);
+      this.auth_token = null;
       this.auth_token = response.access_token ? response.access_token : null;
       console.log("auth_token: " +  this.auth_token);
       return this.auth_token != null;
@@ -72,8 +73,19 @@ export class RestDataSource {
       console.log("REST DATASOURCE: repsonse: ");
       console.log(response);
       this.user = response;
-      return response.username !== undefined;
+      return response.id !== undefined;
     }));
+  }
+
+  public saveUsersList(list: List): Observable<List | null> {
+    console.log("REST DATASOURCE: saving list");
+    return this.http.post<List>(this.baseUrl + "api/user/lists", list,
+        this.getOptions())
+        .pipe(map(response => {
+          console.log("REST DATASOURCE: response");
+          console.log(response);
+          return response;
+        }));
   }
 
   private getOptions() {
