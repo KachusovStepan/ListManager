@@ -1,10 +1,7 @@
 package com.example.listmanager.controllers;
 
 import com.example.listmanager.model.*;
-import com.example.listmanager.repos.CategoryRepository;
-import com.example.listmanager.repos.ItemListRepository;
-import com.example.listmanager.repos.ItemRepository;
-import com.example.listmanager.repos.ItemStatusRepository;
+import com.example.listmanager.repos.*;
 import com.example.listmanager.services.IListService;
 import com.example.listmanager.services.IUserService;
 import org.slf4j.Logger;
@@ -16,8 +13,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.transaction.Transactional;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @RequestMapping("/api")
@@ -30,6 +29,7 @@ public class UserController {
     private final ItemRepository itemRepository;
     private final CategoryRepository categoryRepository;
     private final ItemStatusRepository itemStatusRepository;
+    private final UserRepository userRepository;
 
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     public UserController(
@@ -38,7 +38,8 @@ public class UserController {
             ItemListRepository itemListRepository,
             ItemRepository itemRepository,
             CategoryRepository categoryRepository,
-            ItemStatusRepository itemStatusRepository
+            ItemStatusRepository itemStatusRepository,
+            UserRepository userRepository
     ) {
         this.userService = userService;
         this.listService = listService;
@@ -47,6 +48,7 @@ public class UserController {
         this.itemRepository = itemRepository;
         this.categoryRepository = categoryRepository;
         this.itemStatusRepository = itemStatusRepository;
+        this.userRepository = userRepository;
     }
 
     @GetMapping("user")
@@ -81,7 +83,11 @@ public class UserController {
     }
 
     @GetMapping("user/lists")
-    ResponseEntity<List<ItemList>> getUserLists(Principal principal) {
+    ResponseEntity<List<ItemList>> getUserLists(
+            Principal principal,
+            @RequestParam(value = "category", required = false) String category,
+            @RequestParam(value = "sort", required = false) String sort
+    ) {
         log.info("getUserLists");
         if (principal == null) {
             log.info("Principal == null");
@@ -94,10 +100,57 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
         log.info("Returning Ok with " + user.getLists().size() + " elements");
-        return ResponseEntity.ok().body(user.getLists());
+
+        List<ItemList> resultLists = user.getLists();
+        if (category != null && category.length() > 0) {
+            Category requestedCategory = categoryRepository.findByName(category);
+            if (requestedCategory == null) {
+                ResponseEntity.ok().body(new ArrayList<>());
+            }
+            resultLists = resultLists.stream()
+                    .filter(l -> l.getCategory().getId() == requestedCategory.getId())
+                    .collect(Collectors.toList());
+        }
+        if (sort != null && sort.length() > 0) {
+            boolean success = sortItemListsBy(resultLists, sort);
+            if (!success) {
+                return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
+            }
+        }
+        return ResponseEntity.ok().body(resultLists);
+    }
+
+    private boolean sortItemListsBy(List<ItemList> list, String sortParam) {
+        String[] parts = sortParam.split(",");
+        if (parts[0].equals("name")) {
+            if (parts.length > 1 && parts[1] == "desc") {
+                list.sort((l1, l2) -> -l1.getName().compareTo(l2.getName()));
+            } else {
+                list.sort(Comparator.comparing(ItemList::getName));
+            }
+            return true;
+        }
+        if (parts[0].equals("category")) {
+            if (parts.length > 1 && parts[1].equals("desc")) {
+                list.sort((l1, l2) -> -l1.getCategory().getName().compareTo(l2.getCategory().getName()));
+            } else {
+                list.sort(Comparator.comparing(l -> l.getCategory().getName()));
+            }
+            return true;
+        }
+        if (parts[0].equals("count")) {
+            if (parts.length > 1 && parts[1].equals("desc")) {
+                list.sort((l1, l2) -> -(l1.getItems().size() - l2.getItems().size()));
+            } else {
+                list.sort(Comparator.comparingInt(l -> l.getItems().size()));
+            }
+            return true;
+        }
+        return false;
     }
 
     @PostMapping("user/lists")
+//    @Transactional
     ResponseEntity<ItemList> saveUserList(Principal principal, @RequestBody ItemList toSave) {
         if (principal == null) {
             log.info("Principal == null");
@@ -122,9 +175,13 @@ public class UserController {
         // delete item if not present ^
         ItemList savedList = listService.saveList(toSave);
         if (user.getLists().stream().noneMatch(l -> l.getId() == savedList.getId())) {
-            user.getLists().add(savedList);
+            List<ItemList> userLists = user.getLists();
+            userLists.add(savedList);
+            user.setLists(userLists);
+            userRepository.save(user);
         }
-        return ResponseEntity.ok().body(savedList);
+
+        return ResponseEntity.ok().body(toSave);
     }
 
     @GetMapping("/users")

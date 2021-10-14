@@ -1,6 +1,7 @@
 package com.example.listmanager.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
@@ -10,6 +11,7 @@ import java.util.List;
 public class ItemList {
     @Id
     @GeneratedValue
+    @Column(name = "item_list_id")
     private Long id;
 
     private String name;
