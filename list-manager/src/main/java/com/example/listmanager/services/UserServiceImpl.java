@@ -17,10 +17,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-//ПРОЧИТАТЬ И ПОНЯТЬ!!!
-
 @Service
-@Transactional // to not save entities explicitly
+@Transactional
 public class UserServiceImpl implements IUserService, UserDetailsService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -39,10 +37,7 @@ public class UserServiceImpl implements IUserService, UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username);
         if (user == null) {
-            // user not found in the database
             throw new UsernameNotFoundException("user not found in the database");
-        } else {
-            // user found in the database
         }
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
         user.getRoles().forEach(role -> {
@@ -69,6 +64,15 @@ public class UserServiceImpl implements IUserService, UserDetailsService {
         user.getRoles().add(role); // not explicitly saving because transactional
     }
 
+    //Спросить на практике: Почему у user нужно вызывать save явно,
+    //а для добавления роли в базу данных достаточно только
+    //обновить поле в объектной репрезентации user?
+
+
+    //Кажется, что angular забирает на себя слишком много серверной работы.
+    //Можно ли как-то использовать его только для фронта, чтобы не проникать в
+    //REST-api логику общения с сервером?
+
     @Override
     public User getUser(String username) {
         return userRepository.findByUsername(username);
@@ -78,6 +82,4 @@ public class UserServiceImpl implements IUserService, UserDetailsService {
     public List<User> getUsers() {
         return userRepository.findAll();
     }
-
-
 }

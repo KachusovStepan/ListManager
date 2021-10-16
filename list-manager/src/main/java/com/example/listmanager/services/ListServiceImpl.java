@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 
 
 @Service
-@Transactional // to not save entities explicitly
+@Transactional
 public class ListServiceImpl implements IListService {
     private final ItemListRepository itemListRepository;
     private final ItemRepository itemRepository;
@@ -44,89 +44,12 @@ public class ListServiceImpl implements IListService {
         return itemListRepository.save(list);
     }
 
-//    @Override
-//    public ItemList trySaveItemList(ItemList newList) {
-//        ItemList resultList;
-//        boolean listCreated = false;
-//        if (newList.getId() != null) {
-//            resultList = itemListRepository.getById(newList.getId());
-//            if (resultList == null) {
-//                return null;
-//            }
-//        } else {
-//            listCreated = true;
-//            resultList = new ItemList();
-//        }
-//        if (resultList.getItems() == null) {
-//            resultList.setItems(new ArrayList<>());
-//        }
-//        resultList.setName(newList.getName());
-//        Category category = categoryRepository.findByName(newList.getCategory().getName());
-//        resultList.setCategory(category);
-//        List<Item> newItems = newList.getItems();
-//        for (Item newItem : newItems) {
-//            Item resultItem;
-//            boolean itemCreated = false;
-//            if (newItem.getId() != null) {
-//                Optional<Item> optionalItem = resultList.getItems().stream()
-//                        .filter(i -> i.getId() == newItem.getId()).findFirst();
-//                if (optionalItem.isEmpty()) {
-//                    return null;
-//                }
-//                resultItem = optionalItem.get();
-//            } else {
-//                itemCreated = true;
-//                resultItem = new Item();
-//            }
-//            resultItem.setNumber(newItem.getNumber());
-//            resultItem.setPriority(newItem.getPriority());
-//            resultItem.setDescription(newItem.getDescription());
-//            ItemStatus itemStatus = itemStatusRepository.findByName(newItem.getStatus().getName());
-//            if (itemStatus == null) {
-//                itemStatus = itemStatusRepository.findByName("ToDo");
-//            }
-//            resultItem.setStatus(itemStatus);
-//
-//            if (itemCreated) {
-//                itemRepository.save(resultItem);
-//            }
-//            resultList.getItems().add(resultItem);
-//        }
-//
-//        if (listCreated) {
-//            itemListRepository.save(resultList);
-//        }
-//        return resultList;
-//    }
-
     @Override
     public void addListToUser(User user, ItemList list) {
-//        User user = userService.getUser(username);
         if (user.getLists().stream().noneMatch(l -> list.getId() == l.getId())) {
             user.getLists().add(list);
         }
     }
-
-//    public boolean tryPrepareItemListCompounds(ItemList list, ItemList resList) {
-//        Category category = categoryRepository.findByName(list.getCategory().getName());
-//        resList.setCategory(category);
-//        List<Item> items = list.getItems();
-//        List<Item> resItems = resList.getItems();
-//        Stream<Item> resItemsStream = resItems.stream();
-//        if(items != null) {
-//            for(Item item : items) {
-//                Long itemId = item.getId();
-//                if (itemRepository.existsById(itemId)) {
-//                    if (resItemsStream.anyMatch(i -> i.getId() == itemId)) {
-//                        // change
-//                    } else {
-//                        // error
-//                        return false;
-//                    }
-//                }
-//            }
-//        }
-//    }
 
     @Override
     public Item saveItem(Item item) {
