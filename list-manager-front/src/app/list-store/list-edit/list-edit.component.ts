@@ -27,14 +27,31 @@ export class ListEditComponent {
     return this.repository.getCategories();
   }
 
+  public get CategoryNames(): string[] {
+    return this.repository.getCategories().map(c => c?.name ?? "undefined");
+  }
+
   public get ItemStatuses(): ItemStatus[] {
     return this.repository.getItemStatuses();
+  }
+
+  public get ItemStatusNames(): string[] {
+    return this.repository.getItemStatuses().map(s => s?.name ?? "undefined");
   }
 
   public get Items(): ListItem[] {
     console.log("List edit: items");
     console.log(this.listManager.list.items);
-    return this.listManager.list.items.sort((a, b) => a.number - b.number);
+    console.log("List edit: itemStatuses");
+    console.log(this.ItemStatuses)
+    return this.listManager.list.items
+    // .map(i => {
+    //   let newStatus = new ItemStatus();
+    //   newStatus.name = i.status?.name;
+    //   i.status = newStatus;
+    //   return i;
+    // })
+    .sort((a, b) => a.number - b.number);
   }
 
   public get List(): List {
@@ -52,7 +69,9 @@ export class ListEditComponent {
     if (items.length > 0) {
       item.number = items[items.length - 1].number + 1;
     }
-    item.status = this.ItemStatuses.find(is => is.name == "To Do")
+    // item.status = this.ItemStatuses.find(is => is.name == "To Do")
+    item.status = new ItemStatus()
+    item.status.name = "To Do";
     this.listManager.addItem(item);
   }
 

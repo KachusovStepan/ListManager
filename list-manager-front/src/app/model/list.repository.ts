@@ -72,7 +72,7 @@ export class ListRepository {
   }
 
   public getCategories(): Category[] {
-    return this.categories;
+    return this.allCategories;
   }
 
   public getItemStatuses(): ItemStatus[] {

@@ -32,12 +32,11 @@
     </div>
     <div>
       <label class="text-dark">Category</label>
-      <select class="form-control" name="category" [(ngModel)]="listManager.list.category">
-        <option *ngFor="let category of Categories"
-        [selected]="List.category.name == category.name"
+      <select class="form-control" name="category" [(ngModel)]="listManager.list.category.name">
+        <option *ngFor="let category of CategoryNames"
         [ngValue]="category"
         >
-          {{category.name}}
+          {{category}}
         </option>
       </select>
     </div>
@@ -69,13 +68,11 @@
           />
         </div>
         <div class="col-3">
-          <select class="form-control" name="itemstatus" [(ngModel)]="item.status">
-            <option *ngFor="let itemStatus of ItemStatuses"
+          <select class="form-control" name="itemstatus" [(ngModel)]="item.status!.name">
+            <option *ngFor="let itemStatus of ItemStatusNames"
               [ngValue]="itemStatus"
-              [selected]="item.status?.name == itemStatus.name"
-
             >
-              {{itemStatus.name}}
+              {{itemStatus}}
             </option>
           </select>
         </div>

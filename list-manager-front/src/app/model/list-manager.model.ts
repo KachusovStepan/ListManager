@@ -12,6 +12,7 @@ export class ListManger {
     // this.list = newList;
     this.Saved = false;
     this.list = JSON.parse(JSON.stringify(newList))
+    this.list.category.id = undefined;
   }
 
   public addItem(listItem: ListItem) {

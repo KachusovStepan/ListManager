@@ -168,7 +168,9 @@ public class UserController {
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
         }
-        toSave.setCategory(categoryRepository.findByName(toSave.getCategory().getName()));
+        if (toSave.getCategory() != null) {
+            toSave.setCategory(categoryRepository.findByName(toSave.getCategory().getName()));
+        }
         for (Item item : toSave.getItems()) {
             item.setStatus(itemStatusRepository.findByName(item.getStatus().getName()));
         }
