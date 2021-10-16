@@ -1,0 +1,39 @@
+<div class="contrainer-fluid">
+  <div class="bg-info p-2 text-center text-white">
+    <h3 class="h1">ListManager User</h3>
+    <h3 class="h1">Authorization</h3>
+  </div>
+  <div
+    class="bg-danger mt-2 p-2 text-center text-dark"
+    *ngIf="errorMessage != null"
+  >
+    {{ errorMessage }}
+  </div>
+  <div class="p-2">
+    <form novalidate #form="ngForm" (ngSubmit)="authenticate(form)" class="myForm">
+      <div class="form-group">
+        <label class="text-dark">Name</label>
+        <input
+          class="form-control"
+          name="username"
+          [(ngModel)]="username"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label class="text-dark">Password</label>
+        <input
+          class="form-control"
+          type="password"
+          name="password"
+          [(ngModel)]="password"
+          required
+        />
+      </div>
+      <div class="text-center">
+        <button class="btn btn-secondary m-1" routerLink="/">Go back</button>
+        <button class="btn btn-primary m-1" type="submit">Log In</button>
+      </div>
+    </form>
+  </div>
+</div>

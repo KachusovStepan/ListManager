@@ -1,6 +1,8 @@
 package com.example.listmanager.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,12 +12,14 @@ import java.util.List;
 public class User {
     @Id
     @GeneratedValue
+    @Column(name = "user_id")
     private Long id;
 
     private String username;
     private String email;
     private String password;
     @ManyToMany
+    @JsonIgnore
     private List<Role> roles = new ArrayList<>();
 
     @OneToMany
@@ -35,6 +39,13 @@ public class User {
         this.username = name;
         this.roles = roles;
         this.email = email;
+    }
+
+    public User(String username, String email, String password, List<ItemList> lists) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.lists = lists;
     }
 
     public Long getId() {

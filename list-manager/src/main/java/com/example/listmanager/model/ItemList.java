@@ -1,6 +1,9 @@
 package com.example.listmanager.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -8,13 +11,15 @@ import java.util.List;
 public class ItemList {
     @Id
     @GeneratedValue
+    @Column(name = "item_list_id")
     private Long id;
 
     private String name;
     @ManyToOne
     private Category category;
 
-    @OneToMany
+//    @JsonManagedReference
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Item> items;
 
     public ItemList() {}
@@ -22,6 +27,12 @@ public class ItemList {
     public ItemList(String name, Category category) {
         this.name = name;
         this.category = category;
+    }
+
+    public ItemList(String name, Category category, List<Item> items) {
+        this.name = name;
+        this.category = category;
+        this.items = items;
     }
 
     public List<Item> getItems() {

@@ -1,0 +1,14 @@
+
+<nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+  <a class="navbar-brand" routerLink="/">List Manager</a>
+    <ul class="navbar-nav">
+      <li *ngFor="let option of NavigationOptions"  class="nav-item active">
+        <a class="nav-link"
+            [class.disabled]="option.isDisabled"
+            [class.text-info]="option.isActive"
+            routerLink="{{option.rlink}}">
+          {{option.title}} <span *ngIf="option.isActive" class="sr-only">(current)</span>
+        </a>
+      </li>
+    </ul>
+</nav>

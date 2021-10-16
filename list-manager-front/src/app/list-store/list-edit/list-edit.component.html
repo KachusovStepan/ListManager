@@ -1,0 +1,92 @@
+<!-- <div class="container-fluid">
+  <div class="row">
+    <div class="col bg-dark text-white">
+      <a class="navbar-brand">LIST MANAGER</a>
+    </div>
+  </div>
+</div> -->
+
+<!-- <h4 class="bg-success">Place Holder</h4> -->
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col bg-dark text-white">
+      <button class="btn btn-danger m-2" style="float: right" routerLink="user/main">
+        User
+      </button>
+      <!-- <a class="navbar-brand" routerLink="/main-page">List Manager</a> -->
+      <navigation activeLink="Your Lists"></navigation>
+      <list-summary></list-summary>
+    </div>
+  </div>
+  <div class="row">
+    <div>
+      <label class="text-dark">Name</label>
+      <input
+        class="form-control"
+        name="listname"
+        type="text"
+        [(ngModel)]="listManager.list.name"
+        required
+      />
+    </div>
+    <div>
+      <label class="text-dark">Category</label>
+      <select class="form-control" name="category" [(ngModel)]="listManager.list.category.name">
+        <option *ngFor="let category of CategoryNames"
+        [ngValue]="category"
+        >
+          {{category}}
+        </option>
+      </select>
+    </div>
+    <div class="row text-center">
+      <div class="col-2">№</div>
+      <div class="col-6">Description</div>
+      <div class="col-3">Status</div>
+      <div class="col-1"></div>
+    </div>
+    <div clas="container-fluid" *ngFor="let item of Items">
+      <div class="row">
+        <div class="col-2">
+          <!-- <label class="text-dark">№</label> -->
+          <input
+            class="form-control"
+            name="listname"
+            [(ngModel)]="item.number"
+            type="number"
+            required
+          />
+        </div>
+        <div class="col-6">
+          <!-- <label class="text-dark">Desc: </label> -->
+          <input
+            class="form-control"
+            name="listname"
+            [(ngModel)]="item.description"
+            required
+          />
+        </div>
+        <div class="col-3">
+          <select class="form-control" name="itemstatus" [(ngModel)]="item.status!.name">
+            <option *ngFor="let itemStatus of ItemStatusNames"
+              [ngValue]="itemStatus"
+            >
+              {{itemStatus}}
+            </option>
+          </select>
+        </div>
+        <div class="col-1">
+          <button class="btn-outline-danger" (click)="removeItem(item)">X</button>
+        </div>
+      </div>
+    </div>
+    <div class="row text-center">
+      <button class="btn-outline-success" (click)="addNewItem()">Add new Item</button>
+    </div>
+  </div>
+  <div class="text-center" >
+    <button class="btn btn-secondary m-1" [class.disabled]="Saving" (click)="goBack()">Go back</button>
+    <button class="btn btn-primary m-1" [class.disabled]="Saving" (click)="saveList()">Save</button>
+  </div>
+</div>
