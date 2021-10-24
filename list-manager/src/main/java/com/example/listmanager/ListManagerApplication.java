@@ -1,9 +1,9 @@
 package com.example.listmanager;
 
-import com.example.listmanager.model.Role;
 import com.example.listmanager.model.User;
-import com.example.listmanager.services.IUserService;
-import org.springframework.boot.CommandLineRunner;
+import com.example.listmanager.model.dto.UserGetDto;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -22,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @SpringBootApplication
@@ -78,6 +78,20 @@ public class ListManagerApplication {
 		// FIXME: now using json body, html form probably send form body
 		return new String(Files.readAllBytes(Paths.get("H:\\IMKN\\java\\project_list_manager\\ListManager\\list-manager\\src\\main\\resources\\static\\login.html")));
 
+	}
+
+	public class UserGetDtoMap extends PropertyMap<User, UserGetDto> {
+		protected void configure() {
+			map().setLists(source.getLists() != null ? source.getLists().stream().map(l -> l.getId()).collect(Collectors.toList()) : null);
+			map().setRoles(source.getRoles() != null ? source.getRoles().stream().map(r -> r.getId()).collect(Collectors.toList()) : null);
+		}
+	}
+
+	@Bean
+	public ModelMapper modelMapper() {
+		var modelMapper = new ModelMapper();
+		modelMapper.addMappings(new UserGetDtoMap());
+		return modelMapper;
 	}
 
 //	@Bean

@@ -104,7 +104,7 @@ public class UserController {
         List<ItemList> resultLists = user.getLists();
         if (category != null && category.length() > 0) {
             Category requestedCategory = categoryRepository.findByName(category);
-            if (requestedCategory == null) {
+            if (requestedCategory == null) { //Maybe Exception?
                 ResponseEntity.ok().body(new ArrayList<>());
             }
             resultLists = resultLists.stream()

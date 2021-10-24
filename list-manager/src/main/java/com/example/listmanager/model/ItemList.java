@@ -1,6 +1,7 @@
 package com.example.listmanager.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -15,6 +16,11 @@ public class ItemList {
     private Long id;
 
     private String name;
+
+    @ManyToOne
+    @JsonIdentityReference(alwaysAsId = true)
+    private User user;
+
     @ManyToOne
     private Category category;
 
@@ -24,15 +30,11 @@ public class ItemList {
 
     public ItemList() {}
 
-    public ItemList(String name, Category category) {
-        this.name = name;
-        this.category = category;
-    }
-
-    public ItemList(String name, Category category, List<Item> items) {
+    public ItemList(String name, User user, Category category, List<Item> items) {
         this.name = name;
         this.category = category;
         this.items = items;
+        this.user = user;
     }
 
     public List<Item> getItems() {
@@ -66,6 +68,10 @@ public class ItemList {
     public void setCategory(Category category) {
         this.category = category;
     }
+
+    public User getUser() { return user; }
+
+    public void setUser(User user) { this.user = user; }
 
     @Override
     public String toString() {

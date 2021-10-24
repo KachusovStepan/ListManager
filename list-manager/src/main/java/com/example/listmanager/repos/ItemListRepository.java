@@ -12,6 +12,7 @@ import java.util.List;
 
 public interface ItemListRepository extends JpaRepository<ItemList, Long> {
     Page<ItemList> findAll(Pageable pageable);
+
     Page<ItemList> findByCategory(Long categoryId, Pageable pageable);
 
 //    @Query("SELECT t FROM Todo t WHERE " +
