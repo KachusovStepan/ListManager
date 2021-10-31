@@ -1,9 +1,15 @@
 package com.example.listmanager;
 
+import com.example.listmanager.model.Category;
+import com.example.listmanager.model.ItemList;
 import com.example.listmanager.model.Role;
 import com.example.listmanager.model.User;
-import com.example.listmanager.services.IUserService;
-import org.springframework.boot.CommandLineRunner;
+import com.example.listmanager.model.dto.ItemListToGetDto;
+import com.example.listmanager.model.dto.UserToGetDto;
+import org.modelmapper.Converter;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
+import org.modelmapper.spi.MappingContext;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -13,7 +19,6 @@ import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -22,6 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @SpringBootApplication
@@ -33,14 +39,6 @@ public class ListManagerApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(ListManagerApplication.class, args);
-//		Configuration conf = new Configuration().configure().addAnnotatedClass(User.class);
-//		ServiceRegistry sr = new StandardServiceRegistryBuilder().applySettings(conf.getProperties()).build();
-//		SessionFactory sf = conf.buildSessionFactory(sr);
-//		Session session = sf.openSession();
-//
-//		Transaction ts = session.beginTransaction();
-//		team = (List<String>)session.createCriteria(User.class).list().stream().map(x -> ((User)x).getUser_name()).collect(Collectors.toList());
-//		ts.commit();
 	}
 
 	@GetMapping("/hello")
@@ -80,18 +78,58 @@ public class ListManagerApplication {
 
 	}
 
-//	@Bean
-//	CommandLineRunner run(IUserService userService) {
-//		return args -> {
-//			userService.saveRole(new Role(null, "ROLE_USER"));
-//			userService.saveRole(new Role(null, "ROLE_MANAGER"));
-//			userService.saveRole(new Role(null, "ROLE_ADMIN"));
-//
-//			userService.saveUser(new User(null, "shiny", "shiny@admin.com", "1111", new ArrayList<>()));
-//			userService.addRoleToUser("shiny", "ROLE_USER");
-//			userService.addRoleToUser("shiny", "ROLE_MANAGER");
-//			userService.addRoleToUser("shiny", "ROLE_ADMIN");
-//		};
-//	}
+	static class ItemListConverter implements Converter<List<ItemList>, List<Object>> {
+		public List<Object> convert(MappingContext<List<ItemList>, List<Object>> context) {
+			List<Long> ilIds = new ArrayList<Long>();
+			for (ItemList il : context.getSource()) {
+				ilIds.add(il.getId());
+			}
+			return context.getMappingEngine().map(context.create(ilIds, context.getDestinationType()));
+		}
+	}
+
+	static class RoleConverter implements Converter<List<Role>, List<Object>> {
+		public List<Object> convert(MappingContext<List<Role>, List<Object>> context) {
+			List<Long> roleIds = new ArrayList<Long>();
+			for (Role r : context.getSource()) {
+				roleIds.add(r.getId());
+			}
+			return context.getMappingEngine().map(context.create(roleIds, context.getDestinationType()));
+		}
+	}
+
+	static class CategoryConverter implements Converter<Category, Object> {
+		public Object convert(MappingContext<Category, Object> context) {
+			return context.getMappingEngine().map(context.create(context.getSource().getId(), context.getDestinationType()));
+		}
+	}
+
+	static class UserToIdConverter implements Converter<User, Object> {
+		public Object convert(MappingContext<User, Object> context) {
+			return context.getMappingEngine().map(context.create(context.getSource().getId(), context.getDestinationType()));
+		}
+	}
+
+	@Bean
+	public ModelMapper modelMapper() {
+		var modelMapper = new ModelMapper();
+		modelMapper.addMappings(new PropertyMap<User, UserToGetDto>() {
+			@Override
+			protected void configure() {
+				using(new ItemListConverter()).map(source.getLists()).setLists(null);
+				using(new RoleConverter()).map(source.getRoles()).setRoles(null);
+			}
+		});
+
+		modelMapper.addMappings(new PropertyMap<ItemList, ItemListToGetDto>() {
+			@Override
+			protected void configure() {
+				using(new CategoryConverter()).map(source.getCategory()).setCategory(null);
+				using(new UserToIdConverter()).map(source.getUser()).setUser(null);
+			}
+		});
+
+		return modelMapper;
+	}
 }
 

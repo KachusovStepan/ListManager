@@ -1,8 +1,7 @@
 package com.example.listmanager.model;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,17 +17,24 @@ public class User {
     private String username;
     private String email;
     private String password;
-    @ManyToMany
-    @JsonIgnore
+//    @ManyToMany
+//    @JsonIgnore
+    @ManyToMany(fetch = FetchType.LAZY)
     private List<Role> roles = new ArrayList<>();
 
     @OneToMany
-    private List<ItemList> lists;
+//    @JsonIdentityReference(alwaysAsId = true)
+    private List<ItemList> lists = new ArrayList<>();
+
+    public User(String username, String email, String password) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+    }
 
     public User() {}
 
-    public User(Long id, String username, String email, String password, List<Role> roles) {
-        this.id = id;
+    public User(String username, String email, String password, List<Role> roles) {
         this.username = username;
         this.email = email;
         this.password = password;
@@ -39,13 +45,6 @@ public class User {
         this.username = name;
         this.roles = roles;
         this.email = email;
-    }
-
-    public User(String username, String email, String password, List<ItemList> lists) {
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.lists = lists;
     }
 
     public Long getId() {

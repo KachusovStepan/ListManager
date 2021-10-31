@@ -28,15 +28,16 @@ public class LoadDatabase {
     }
 
     public static ItemList GenerateItemList(
-            IListService listService, int count,
+            IListService listService, int count, User user,
             List<Category> categories, List<ItemStatus> statuses, List<String> tasks, List<String> listNames) {
         List<Item> items = new ArrayList<>();
         for(int i = 0; i < count; i++) {
 //            items.add(listService.saveItem(new Item(i, random.nextInt(10), AnyItem(tasks), AnyItem(statuses))));
             items.add(new Item(i, random.nextInt(10), AnyItem(tasks), AnyItem(statuses)));
         }
-        ItemList list = listService.saveList(new ItemList(AnyItem(listNames), AnyItem(categories), items));
-        return list;
+//        ItemList list = listService.saveList(new ItemList(AnyItem(listNames), AnyItem(categories), items));
+//        return list;
+        return new ItemList(AnyItem(listNames), user, AnyItem(categories), items);
     }
 
     @Bean
@@ -50,7 +51,8 @@ public class LoadDatabase {
             userService.saveRole(new Role("ROLE_MANAGER", "General user with acces to some user lists"));
             userService.saveRole(new Role("ROLE_ADMIN", "Can do everything"));
 
-            userService.saveUser(new User(null, "shiny", "shiny@admin.com", "1111", new ArrayList<>()));
+//            userService.saveUser(new User(null, "shiny", "shiny@admin.com", "1111", new ArrayList<>()));
+            userService.saveUser(new User("shiny", "shiny@admin.com", "1111"));
             userService.addRoleToUser("shiny", "ROLE_USER");
             userService.addRoleToUser("shiny", "ROLE_MANAGER");
             userService.addRoleToUser("shiny", "ROLE_ADMIN");
@@ -76,20 +78,23 @@ public class LoadDatabase {
                     "To Do", "Agenda", "Classes", "Team meeting"
             );
 
+            List<User> users = Arrays.asList(
+                    userService.saveUser(new User("Adam", "adam@example.com","1234"))
+            );
+
 //            ItemList il = GenerateItemList(listService, 10, categories, itemStatuses, taskNames, listNames);
             List<ItemList> itemLists = Arrays.asList(
-                    GenerateItemList(listService, 10, categories, itemStatuses, taskNames, listNames),
-                    GenerateItemList(listService, 7, categories, itemStatuses, taskNames, listNames),
-                    GenerateItemList(listService, 4, categories, itemStatuses, taskNames, listNames),
-                    GenerateItemList(listService, 12, categories, itemStatuses, taskNames, listNames),
-                    GenerateItemList(listService, 2, categories, itemStatuses, taskNames, listNames)
+                    GenerateItemList(listService, 10, users.get(0), categories, itemStatuses, taskNames, listNames),
+                    GenerateItemList(listService, 7, users.get(0), categories, itemStatuses, taskNames, listNames),
+                    GenerateItemList(listService, 4, users.get(0), categories, itemStatuses, taskNames, listNames),
+                    GenerateItemList(listService, 12, users.get(0), categories, itemStatuses, taskNames, listNames),
+                    GenerateItemList(listService, 2, users.get(0), categories, itemStatuses, taskNames, listNames)
             );
-            List<User> users = Arrays.asList(
-//                    userService.saveUser(new User("Adam", "adam@example.com","1234", Arrays.asList(il)))
-                    userService.saveUser(new User("Adam", "adam@example.com","1234", itemLists))
-//                    userService.saveUser(new User("Bany", "bany@example.com","1234", Arrays.asList(lists.get(3), lists.get(4)))),
-//                    userService.saveUser(new User("Dany", "dany@example.com","1234", Arrays.asList(lists.get(5), lists.get(6), lists.get(7), lists.get(8))))
-            );
+
+            users.get(0).getLists().addAll(itemLists);
+            itemLists.forEach(il -> listService.saveList(il));
+            userService.saveUser(users.get(0));
+
             users.forEach(u -> userService.addRoleToUser(u.getUsername(), "ROLE_USER"));
             log.info("Fixtures loaded");
         };
