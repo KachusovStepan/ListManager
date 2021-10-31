@@ -1,6 +1,7 @@
 package com.example.listmanager.controllers;
 
 
+import com.example.listmanager.model.Category;
 import com.example.listmanager.model.ItemList;
 import com.example.listmanager.model.User;
 import com.example.listmanager.model.dto.ItemListToGetDto;
@@ -9,15 +10,13 @@ import com.example.listmanager.repos.ItemListRepository;
 import com.example.listmanager.repos.UserRepository;
 import com.example.listmanager.services.IListService;
 import com.example.listmanager.services.IUserService;
+import org.hibernate.boot.archive.scan.spi.ClassDescriptor;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.parameters.P;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.swing.text.html.Option;
 import java.util.List;
@@ -61,5 +60,31 @@ public class TestController {
         }
         ItemListToGetDto itemListToGetDto = mapper.map(oil.get(), ItemListToGetDto.class);
         return ResponseEntity.ok().body(itemListToGetDto);
+    }
+
+    @GetMapping("/users/{userId}/lists")
+    ResponseEntity<List<ItemListToGetDto>> getUserListExt(
+            @PathVariable Long userId,
+            @RequestParam(value = "category", required = false) String categoryName
+    ) {
+        User user = userRepository.getById(userId);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+        List<ItemList> lists;
+        if (categoryName != null && categoryName.length() > 0) {
+            Category category = listService.getCategory(categoryName);
+            if (category == null) {
+                return ResponseEntity.notFound().build();
+            }
+            lists = itemListRepository.findByUserAndCategory(user, category);
+        } else {
+            lists = user.getLists();
+        }
+
+        List<ItemListToGetDto> itemListToGetDtos = lists.stream()
+                .map(il -> mapper.map(il, ItemListToGetDto.class)).collect(Collectors.toList());
+
+        return ResponseEntity.ok().body(itemListToGetDtos);
     }
 }
