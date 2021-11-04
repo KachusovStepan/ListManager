@@ -1,6 +1,7 @@
 package com.example.listmanager;
 
 import com.example.listmanager.model.*;
+import com.example.listmanager.model.dto.ItemListItemVerboseToGetDto;
 import com.example.listmanager.model.dto.ItemListToGetDto;
 import com.example.listmanager.model.dto.UserToGetDto;
 import org.modelmapper.Converter;
@@ -134,6 +135,14 @@ public class ListManagerApplication {
 				using(new CategoryConverter()).map(source.getCategory()).setCategory(null);
 				using(new UserToIdConverter()).map(source.getUser()).setUser(null);
 				using(new ItemToIdConverter()).map(source.getItems()).setItems(null);
+			}
+		});
+
+		modelMapper.addMappings(new PropertyMap<ItemList, ItemListItemVerboseToGetDto>() {
+			@Override
+			protected void configure() {
+				using(new CategoryConverter()).map(source.getCategory()).setCategory(null);
+				using(new UserToIdConverter()).map(source.getUser()).setUser(null);
 			}
 		});
 

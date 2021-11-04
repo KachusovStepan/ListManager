@@ -1,12 +1,13 @@
 import { Injectable } from "@angular/core";
 import { Category } from "./category.model";
-import { List } from "./list.model";
+import { List, ListToGetDto } from "./list.model";
 import { StaticDataSource } from "./static.datasource";
-import { Observable, forkJoin } from "rxjs";
+import { Observable, forkJoin, from } from "rxjs";
 import { map } from "rxjs/operators";
 import { ItemStatus } from "./itemstatus.model";
 import { RestDataSource } from "./rest.datasource";
 import { IUser } from "./user";
+import { CustomPage } from "./customPage.model";
 
 @Injectable()
 export class ListRepository {
@@ -15,6 +16,10 @@ export class ListRepository {
   private allCategories: Category[] = [];
   private itemStatuses: ItemStatus[] = [];
   private user: IUser | null = null;
+  public totalCount: number = 0;
+  public totalPageCount: number = 0;
+  public pageIndex: number = 0;
+  public pageSize: number = 0;
 
   constructor(private dataSource: RestDataSource) {
     console.log("ListRepository INIT");
@@ -35,31 +40,63 @@ export class ListRepository {
   public setUpData(): void {
     this.requestAll().subscribe(data => {
       this.user = data[0];
-      this.lists = data[1];
-      this.categories = this.lists.map((l: List) => l.category)
-        .filter((c, index: number, array) => array.indexOf(c) == index)
-        .filter(notEmpty)
-        .sort();
-      this.itemStatuses = data[2];
-      this.allCategories = data[3];
-      console.log("Get data from datasource");
-      console.log(this.lists);
-      console.log(this.categories);
+      this.itemStatuses = data[1];
+      this.allCategories = data[2];
+
+      // LOG
+      console.log("Get data from datasource:");
+      console.log("User");
+      console.log(this.user);
+      console.log("allCategories");
+      console.log(this.allCategories);
+      console.log("ItemStatuses");
       console.log(this.itemStatuses);
+
+
+      console.log(`Requesting lists`);
+      this.requestLists().subscribe(
+        succ => console.log(`requestsed lists: success: ${succ}`)
+      );
     });
   }
 
   public requestAll(): Observable<any> {
     let tasks: Observable<any>[] = [];
-    tasks.push(this.dataSource.getUser());
-    tasks.push(this.dataSource.getLists());
-    tasks.push(this.dataSource.getItemStatus());
-    tasks.push(this.dataSource.getCategories());
-    // let sub = forkJoin(tasks).pipe(map(data => {
-    // }));
+    tasks.push(this.dataSource.getUser()); // 0
+    tasks.push(this.dataSource.getItemStatus()); // 1
+    tasks.push(this.dataSource.getCategories()); // 2
     let sub = forkJoin(tasks);
-
     return sub;
+  }
+
+  public requestLists(
+      listName: string = "", categoryName: string = "", sortBy: string = "id",
+      pageIndex: number = 0, pageSize: number = 8): Observable<boolean> {
+    if (this.user === null) {
+      console.log("$> requestLists: user not set");
+      return from([false]);
+    }
+    return this.dataSource.getListsWithParams(listName, categoryName, sortBy, pageIndex, pageSize).pipe(
+      map(page => {
+        this.totalCount = page.totalCount;
+        this.totalPageCount = page.totalPageCount;
+        this.pageIndex = page.pageIndex;
+        this.pageSize = page.pageSize;
+        this.lists = [];
+        for (let list of page.data) {
+          let newList: List = ListToGetDto2List(list);
+          newList.category = this.allCategories.find(l => l.id == list.category) ?? new Category();
+          this.lists.push(newList);
+        }
+        console.log(`ListRepository: got list data ${this.lists.length}`);
+        console.log(this.lists.length);
+        return true;
+      })
+    )
+  }
+
+  public getRawLists() {
+    return this.lists;
   }
 
   public getLists(category: string | null = null): List[] {
@@ -94,7 +131,8 @@ export class ListRepository {
       }
       console.log("Saved list");
       console.log(result);
-      this.lists.push(result);
+      // TODO: make sure it will be displayed
+      // this.lists.push(result);
       return true;
     }
   ));
@@ -104,4 +142,14 @@ export class ListRepository {
 
 function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
   return value !== null && value !== undefined;
+}
+
+
+function ListToGetDto2List(list: ListToGetDto) {
+  let newList: List = new List();
+  newList.id = list.id;
+  newList.name = list.name;
+  newList.items = list.items;
+
+  return newList;
 }

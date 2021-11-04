@@ -1,12 +1,13 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
-import { List } from "./list.model";
+import { List, ListToGetDto } from "./list.model";
 import { map } from "rxjs/operators";
 import { HttpHeaders } from "@angular/common/http";
 import { ItemStatus } from "./itemstatus.model";
 import { IUser } from "./user";
 import { Category } from "./category.model";
+import { CustomPage } from "./customPage.model";
 
 const PROTOCOL = "http";
 const PORT = 8080;
@@ -29,6 +30,11 @@ export class RestDataSource {
     //   this.baseUrl + "api/lists", this.getOptions());
     return this.http.get<List[]>(
       this.baseUrl + "api/user/lists", this.getOptions());
+  }
+
+  public getListsWithParams(listName: string = "", categoryName: string = "", sortBy: string = "id", pageIndex: number = 0, pageSize: number = 8): Observable<CustomPage<ListToGetDto>> {
+    return this.http.get<CustomPage<ListToGetDto>>(
+      this.baseUrl + `api/user/lists?name=${listName}&categoryName=${categoryName}&sortBy=${sortBy}&pageIndex=${pageIndex}&pageSize=${pageSize}`, this.getOptions());
   }
 
   public getItemStatus(): Observable<ItemStatus[]> {

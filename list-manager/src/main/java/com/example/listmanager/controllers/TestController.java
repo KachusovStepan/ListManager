@@ -4,6 +4,7 @@ package com.example.listmanager.controllers;
 import com.example.listmanager.model.Category;
 import com.example.listmanager.model.ItemList;
 import com.example.listmanager.model.User;
+import com.example.listmanager.model.dto.ItemListItemVerboseToGetDto;
 import com.example.listmanager.model.dto.ItemListToGetDto;
 import com.example.listmanager.model.dto.UserToGetDto;
 import com.example.listmanager.repos.ItemListRepository;
@@ -114,6 +115,32 @@ public class TestController {
 
         List<ItemListToGetDto> itemListToGetDtos = lists.stream()
                 .map(il -> mapper.map(il, ItemListToGetDto.class)).collect(Collectors.toList());
+
+        return ResponseEntity.ok().body(itemListToGetDtos);
+    }
+
+    @GetMapping("/users/{userId}/lists/verbose")
+    ResponseEntity<List<ItemListItemVerboseToGetDto>> getUserListsVerbose(
+            @PathVariable Long userId,
+            @RequestParam(value = "sortBy", defaultValue="id", required = false) String sortBy,
+            @RequestParam(value = "pageIndex",  defaultValue="0",  required = false) int pageIndex,
+            @RequestParam(value = "pageSize",  defaultValue="8",  required = false) int pageSize,
+            @RequestParam(value = "name", defaultValue="", required = false) String name,
+            @RequestParam(value = "categoryName", defaultValue="", required = false) String categoryName
+    ) {
+        User user = userRepository.getById(userId);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+        if (!sortBy.equals("category") && !sortBy.equals("name") && !sortBy.equals("id")) {
+            sortBy = "id";
+        }
+        Sort sort = Sort.by(Sort.Direction.ASC, sortBy);
+        Page<ItemList> lists;
+        lists = itemListRepository.getAllByUserAndCategory_NameContainingAndNameContaining(user, categoryName, name, PageRequest.of(pageIndex, pageSize, sort));
+
+        List<ItemListItemVerboseToGetDto> itemListToGetDtos = lists.stream()
+                .map(il -> mapper.map(il, ItemListItemVerboseToGetDto.class)).collect(Collectors.toList());
 
         return ResponseEntity.ok().body(itemListToGetDtos);
     }

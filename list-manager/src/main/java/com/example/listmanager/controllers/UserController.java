@@ -2,6 +2,7 @@ package com.example.listmanager.controllers;
 
 import com.example.listmanager.model.*;
 import com.example.listmanager.model.dto.ItemListToGetDto;
+import com.example.listmanager.model.dto.UserToGetDto;
 import com.example.listmanager.repos.*;
 import com.example.listmanager.services.IListService;
 import com.example.listmanager.services.IUserService;
@@ -9,6 +10,7 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -61,7 +63,7 @@ public class UserController {
     }
 
     @GetMapping("user")
-    ResponseEntity<User> getCurrentUser(Principal principal) {
+    ResponseEntity<UserToGetDto> getCurrentUser(Principal principal) {
         log.info("getCurrentUser");
         if (principal == null) {
             log.info("Principal == null");
@@ -75,7 +77,8 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.ok().body(user);
+        UserToGetDto userToGetDto = mapper.map(user, UserToGetDto.class);
+        return ResponseEntity.ok().body(userToGetDto);
     }
 
     @PostMapping("register")
@@ -92,7 +95,7 @@ public class UserController {
     }
 
     @GetMapping("user/lists")
-    ResponseEntity<List<ItemListToGetDto>> getUserItemLists(
+    ResponseEntity<CustomPage<ItemListToGetDto>> getUserItemLists(
             Principal principal,
             @RequestParam(value = "sortBy", defaultValue="id", required = false) String sortBy,
             @RequestParam(value = "pageIndex",  defaultValue="0",  required = false) int pageIndex,
@@ -116,12 +119,15 @@ public class UserController {
         Sort sort = Sort.by(Sort.Direction.ASC, sortBy);
         Page<ItemList> lists;
         lists = itemListRepository.getAllByUserAndCategory_NameContainingAndNameContaining(user, categoryName, name, PageRequest.of(pageIndex, pageSize, sort));
-
+        int totalCount = (int) lists.getTotalElements();
+        int totalPageCount = lists.getTotalPages();
         List<ItemListToGetDto> itemListToGetDtos = lists.stream()
                 .map(il -> mapper.map(il, ItemListToGetDto.class)).collect(Collectors.toList());
-
-        return ResponseEntity.ok().body(itemListToGetDtos);
+        CustomPage<ItemListToGetDto> p = new CustomPage<>(itemListToGetDtos, totalCount, totalPageCount, pageIndex, pageSize);
+        return ResponseEntity.ok().body(p);
+//        return ResponseEntity.ok().body(itemListToGetDtos);
     }
+
 
 //    @GetMapping("user/lists")
 //    ResponseEntity<List<ItemList>> getUserLists(

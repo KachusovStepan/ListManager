@@ -11,8 +11,10 @@ import { Router } from "@angular/router";
 })
 export class StoreComponent {
   public selectedCategory: string | null = null;
-  public listsPerPage = 4;
-  public selectedPage = 1;
+  public listsPerPage: number = 4;
+  public selectedPage: number = 1;
+  public listName: string = "";
+  public requestingLists: boolean = false;
 
   public constructor(
     private repository: ListRepository,
@@ -20,12 +22,14 @@ export class StoreComponent {
     private router: Router
   ) {
     repository.setUpData();
+    // this.refreshLists();
   }
 
   public get lists(): List[] {
-    let pageIndex = (this.selectedPage - 1) * this.listsPerPage;
-    return this.repository.getLists(this.selectedCategory)
-      .slice(pageIndex, pageIndex + this.listsPerPage);
+    // let pageIndex = (this.selectedPage - 1) * this.listsPerPage;
+    // return this.repository.getLists(this.selectedCategory)
+    //   .slice(pageIndex, pageIndex + this.listsPerPage);
+    return this.repository.getRawLists();
   }
 
   public get categories(): string[] {
@@ -34,27 +38,48 @@ export class StoreComponent {
 
   public changeCategory(newCategory?: string) {
     this.selectedCategory = newCategory ?? null;
+    // this.repository.requestLists(this.listName, this.selectedCategory ?? "", "id", this.selectedPage, this.listsPerPage);
+    this.refreshLists();
   }
 
   public changePage(newPage: number) {
     this.selectedPage = newPage;
+    // this.repository.requestLists(this.listName, this.selectedCategory ?? "", "id", this.selectedPage, this.listsPerPage);
+    this.refreshLists();
   }
 
   public changePageSize(newSize: number) {
     this.listsPerPage = Number(newSize);
-    this.changePage(1);
+    this.selectedPage = 1;
+    // this.repository.requestLists(this.listName, this.selectedCategory ?? "", "id", this.selectedPage, this.listsPerPage);
+    this.refreshLists();
+  }
+
+  public refreshLists() {
+    console.log("> refreshLists");
+    this.requestingLists = true;
+    this.repository.requestLists(this.listName, this.selectedCategory ?? "", "id", this.selectedPage - 1, this.listsPerPage)
+      .subscribe(success => {
+        this.requestingLists = false;
+        console.log(`Lists requested, success: ${success}`);
+        console.log(this.repository.getRawLists());
+      })
   }
 
   public get pageCount(): number {
-    let pcount = Math.ceil(this.repository
-      .getLists(this.selectedCategory).length / this.listsPerPage);
+    // let pcount = Math.ceil(this.repository
+    //   .getLists(this.selectedCategory).length / this.listsPerPage);
     // console.log("PCount: ", pcount);
+    let pcount = this.repository.totalPageCount;
+    console.log("totalPageCount: ", pcount);
     return pcount;
   }
 
   public get pageNumbers(): number[] {
-    return Array(Math.ceil(this.repository
-      .getLists(this.selectedCategory).length / this.listsPerPage))
+    // return Array(Math.ceil(this.repository
+    //   .getLists(this.selectedCategory).length / this.listsPerPage))
+    //   .fill(0).map((x, i) => i + 1);
+    return Array(this.pageCount)
       .fill(0).map((x, i) => i + 1);
   }
 
