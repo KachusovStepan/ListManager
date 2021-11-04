@@ -71,7 +71,7 @@ export class ListRepository {
 
   public requestLists(
       listName: string = "", categoryName: string = "", sortBy: string = "id",
-      pageIndex: number = 0, pageSize: number = 8): Observable<boolean> {
+      pageIndex: number = 0, pageSize: number = 4): Observable<boolean> {
     if (this.user === null) {
       console.log("$> requestLists: user not set");
       return from([false]);

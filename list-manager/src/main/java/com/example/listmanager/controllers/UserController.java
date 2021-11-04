@@ -1,6 +1,7 @@
 package com.example.listmanager.controllers;
 
 import com.example.listmanager.model.*;
+import com.example.listmanager.model.dto.ItemListItemVerboseToGetDto;
 import com.example.listmanager.model.dto.ItemListToGetDto;
 import com.example.listmanager.model.dto.UserToGetDto;
 import com.example.listmanager.repos.*;
@@ -95,7 +96,7 @@ public class UserController {
     }
 
     @GetMapping("user/lists")
-    ResponseEntity<CustomPage<ItemListToGetDto>> getUserItemLists(
+    ResponseEntity<CustomPage<ItemListItemVerboseToGetDto>> getUserItemLists(
             Principal principal,
             @RequestParam(value = "sortBy", defaultValue="id", required = false) String sortBy,
             @RequestParam(value = "pageIndex",  defaultValue="0",  required = false) int pageIndex,
@@ -121,9 +122,9 @@ public class UserController {
         lists = itemListRepository.getAllByUserAndCategory_NameContainingAndNameContaining(user, categoryName, name, PageRequest.of(pageIndex, pageSize, sort));
         int totalCount = (int) lists.getTotalElements();
         int totalPageCount = lists.getTotalPages();
-        List<ItemListToGetDto> itemListToGetDtos = lists.stream()
-                .map(il -> mapper.map(il, ItemListToGetDto.class)).collect(Collectors.toList());
-        CustomPage<ItemListToGetDto> p = new CustomPage<>(itemListToGetDtos, totalCount, totalPageCount, pageIndex, pageSize);
+        List<ItemListItemVerboseToGetDto> itemListToGetDtos = lists.stream()
+                .map(il -> mapper.map(il, ItemListItemVerboseToGetDto.class)).collect(Collectors.toList());
+        CustomPage<ItemListItemVerboseToGetDto> p = new CustomPage<>(itemListToGetDtos, totalCount, totalPageCount, pageIndex, pageSize);
         return ResponseEntity.ok().body(p);
 //        return ResponseEntity.ok().body(itemListToGetDtos);
     }
@@ -198,7 +199,7 @@ public class UserController {
 
     @PostMapping("user/lists")
     @Transactional
-    ResponseEntity<ItemList> saveUserList(Principal principal, @RequestBody ItemList toSave) {
+    ResponseEntity<ItemListItemVerboseToGetDto> saveUserList(Principal principal, @RequestBody ItemList toSave) {
         if (principal == null) {
             log.info("Principal == null");
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -222,6 +223,7 @@ public class UserController {
             item.setStatus(itemStatusRepository.findByName(item.getStatus().getName()));
         }
         // delete item if not present ^
+        toSave.setUser(user);
         ItemList savedList = listService.saveList(toSave);
         if (user.getLists().stream().noneMatch(l -> l.getId() == savedList.getId())) {
             List<ItemList> userLists = user.getLists();
@@ -231,8 +233,8 @@ public class UserController {
         }
 
         userRepository.save(user);
-
-        return ResponseEntity.ok().body(toSave);
+        ItemListItemVerboseToGetDto res = mapper.map(toSave, ItemListItemVerboseToGetDto.class);
+        return ResponseEntity.ok().body(res);
     }
 
     @GetMapping("/users")
