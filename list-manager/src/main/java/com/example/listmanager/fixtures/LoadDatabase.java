@@ -43,7 +43,8 @@ public class LoadDatabase {
     @Bean
     CommandLineRunner initDatabase(
             IListService listService,
-            IUserService userService
+            IUserService userService,
+            UserRepository userRepository
     ) {
         return args -> {
             log.info("Started loading fixtures...");
@@ -93,7 +94,8 @@ public class LoadDatabase {
 
             users.get(0).getLists().addAll(itemLists);
             itemLists.forEach(il -> listService.saveList(il));
-            userService.saveUser(users.get(0));
+//            userService.saveUser(users.get(0));
+            userRepository.save(users.get(0));
 
             users.forEach(u -> userService.addRoleToUser(u.getUsername(), "ROLE_USER"));
             log.info("Fixtures loaded");
