@@ -1,6 +1,5 @@
 package com.example.listmanager.model.dto;
 
-import com.example.listmanager.model.Item;
 import lombok.Data;
 
 import java.util.List;
@@ -11,7 +10,7 @@ public class ItemListToGetDto {
     private String name;
     private Long user;
     private Long category;
-    private List<Item> items;
+    private List<Long> items;
 
     public Long getId() {
         return id;
@@ -45,11 +44,11 @@ public class ItemListToGetDto {
         this.category = category;
     }
 
-    public List<Item> getItems() {
+    public List<Long> getItems() {
         return items;
     }
 
-    public void setItems(List<Item> items) {
+    public void setItems(List<Long> items) {
         this.items = items;
     }
 

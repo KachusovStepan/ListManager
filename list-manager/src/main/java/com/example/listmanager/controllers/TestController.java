@@ -14,11 +14,15 @@ import org.hibernate.boot.archive.scan.spi.ClassDescriptor;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import javax.swing.text.html.Option;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -81,6 +85,32 @@ public class TestController {
         } else {
             lists = user.getLists();
         }
+
+        List<ItemListToGetDto> itemListToGetDtos = lists.stream()
+                .map(il -> mapper.map(il, ItemListToGetDto.class)).collect(Collectors.toList());
+
+        return ResponseEntity.ok().body(itemListToGetDtos);
+    }
+
+    @GetMapping("/users/{userId}/lists/sort")
+    ResponseEntity<List<ItemListToGetDto>> getUserListsSorted(
+            @PathVariable Long userId,
+            @RequestParam(value = "sortBy", defaultValue="id", required = false) String sortBy,
+            @RequestParam(value = "pageIndex",  defaultValue="0",  required = false) int pageIndex,
+            @RequestParam(value = "pageSize",  defaultValue="8",  required = false) int pageSize,
+            @RequestParam(value = "name", defaultValue="", required = false) String name,
+            @RequestParam(value = "categoryName", defaultValue="", required = false) String categoryName
+    ) {
+        User user = userRepository.getById(userId);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+        if (!sortBy.equals("category") && !sortBy.equals("name") && !sortBy.equals("id")) {
+            sortBy = "id";
+        }
+        Sort sort = Sort.by(Sort.Direction.ASC, sortBy);
+        Page<ItemList> lists;
+        lists = itemListRepository.getAllByUserAndCategory_NameContainingAndNameContaining(user, categoryName, name, PageRequest.of(pageIndex, pageSize, sort));
 
         List<ItemListToGetDto> itemListToGetDtos = lists.stream()
                 .map(il -> mapper.map(il, ItemListToGetDto.class)).collect(Collectors.toList());

@@ -1,9 +1,6 @@
 package com.example.listmanager;
 
-import com.example.listmanager.model.Category;
-import com.example.listmanager.model.ItemList;
-import com.example.listmanager.model.Role;
-import com.example.listmanager.model.User;
+import com.example.listmanager.model.*;
 import com.example.listmanager.model.dto.ItemListToGetDto;
 import com.example.listmanager.model.dto.UserToGetDto;
 import org.modelmapper.Converter;
@@ -110,6 +107,16 @@ public class ListManagerApplication {
 		}
 	}
 
+	static class ItemToIdConverter implements Converter<List<Item>, List<Object>> {
+		public List<Object> convert(MappingContext<List<Item>, List<Object>> context) {
+			List<Long> roleIds = new ArrayList<Long>();
+			for (Item r : context.getSource()) {
+				roleIds.add(r.getId());
+			}
+			return context.getMappingEngine().map(context.create(roleIds, context.getDestinationType()));
+		}
+	}
+
 	@Bean
 	public ModelMapper modelMapper() {
 		var modelMapper = new ModelMapper();
@@ -126,8 +133,10 @@ public class ListManagerApplication {
 			protected void configure() {
 				using(new CategoryConverter()).map(source.getCategory()).setCategory(null);
 				using(new UserToIdConverter()).map(source.getUser()).setUser(null);
+				using(new ItemToIdConverter()).map(source.getItems()).setItems(null);
 			}
 		});
+
 
 		return modelMapper;
 	}

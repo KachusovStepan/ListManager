@@ -6,7 +6,7 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-public class ItemList {
+public class ItemList implements Comparable<ItemList> {
     @Id
     @GeneratedValue
     @Column(name = "item_list_id")
@@ -23,6 +23,7 @@ public class ItemList {
 
 //    @JsonManagedReference
     @OneToMany(cascade = CascadeType.ALL)
+    @OrderBy("number ASC")
     private List<Item> items;
 
     public ItemList() {}
@@ -80,5 +81,19 @@ public class ItemList {
     public String toString() {
         return "ItemList{"+ "id = " + this.id + ", name = " + this.name +
                 "', category = "+ this.category +"'}";
+    }
+
+    @Override
+    public int compareTo(ItemList other) {
+        if (name == other.getName()) {
+            return 0;
+        }
+        if (name == null) {
+            return -1;
+        }
+        if (other.getName() == null) {
+            return 1;
+        }
+        return name.compareTo(other.getName());
     }
 }

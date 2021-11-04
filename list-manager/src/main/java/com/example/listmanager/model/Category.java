@@ -6,7 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 @Entity
-public class Category {
+public class Category implements Comparable<Category> {
     @Id
     @GeneratedValue
     private Long id;
@@ -36,5 +36,19 @@ public class Category {
     @Override
     public String toString() {
         return "ItemStatus{"+ "id = " + this.id + ", name = " + this.name + "'}";
+    }
+
+    @Override
+    public int compareTo(Category other) {
+        if (name == other.getName()) {
+            return 0;
+        }
+        if (name == null) {
+            return -1;
+        }
+        if (other.getName() == null) {
+            return 1;
+        }
+        return name.compareTo(other.getName());
     }
 }
