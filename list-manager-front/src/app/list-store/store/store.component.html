@@ -22,6 +22,7 @@
       <button *ngFor="let category of categories"
           class="btn btn-outline-dark btn-block w-100"
           [class.active]="category == selectedCategory"
+          [class.disabled]="requestingLists"
           (click)="changeCategory(category)">
         {{category}}
       </button>
@@ -48,7 +49,7 @@
 
       <div class="form-inline float-left mr-1 mt-auto">
         <select class="form-control" [value]="listsPerPage"
-            (change)="changePageSize(($any($event.target)).value)">
+            (change)="changePageSize(($any($event.target)).value)" [class.disabled]="requestingLists">
           <option value="3">3 per Page</option>
           <option value="4">4 per Page</option>
           <option value="6">6 per Page</option>
@@ -60,6 +61,7 @@
         <button *ngFor="let page of pageNumbers"
             (click)="changePage(page)"
             class="btn btn-outline-light"
+            [class.disabled]="requestingLists"
             [class.active]="page == selectedPage">
           {{page}}
         </button>
