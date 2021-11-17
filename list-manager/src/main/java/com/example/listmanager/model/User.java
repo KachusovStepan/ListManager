@@ -22,7 +22,7 @@ public class User {
     @ManyToMany(fetch = FetchType.LAZY)
     private List<Role> roles = new ArrayList<>();
 
-    @OneToMany
+    @OneToMany()
 //    @JsonIdentityReference(alwaysAsId = true)
     private List<ItemList> lists = new ArrayList<>();
 

@@ -1,6 +1,9 @@
 <div class="container-fluid">
   <div class="bg-info p-2 text-white text-center">
-    <h3>Placeholder for User</h3>
-    <button class="btn btn-secondary m-1" routerLink="/">Go back</button>
+    <h3>User home page</h3>
+    <h3>Name: {{ user ? user.username : "Not loaded" }}</h3>
+    <h3>Email: {{ user ? user.email : "Not loaded" }}</h3>
+    <h3>You have {{ user ? user.lists?.length : "Not loaded" }} lists</h3>
+    <button class="btn btn-secondary m-1" routerLink="/">Go to Main Page</button>
   </div>
 </div>

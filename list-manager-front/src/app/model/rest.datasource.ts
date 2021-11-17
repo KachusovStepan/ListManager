@@ -2,7 +2,7 @@ import { ComponentFactoryResolver, Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { from, Observable } from "rxjs";
 import { List, ListToGetDto } from "./list.model";
-import { map } from "rxjs/operators";
+import { map, catchError } from "rxjs/operators";
 import { HttpHeaders } from "@angular/common/http";
 import { ItemStatus } from "./itemstatus.model";
 import { IUser } from "./user";
@@ -166,6 +166,24 @@ export class RestDataSource {
       }));
   }
 
+  public deleteUsersList(id: number): Observable<boolean> {
+    console.log("REST DATASOURCE: deleting list");
+    if (this.refresh_token && this.tokenExpiresLessThan(this.refresh_token, 5)) {
+      return this.refreshTokens().pipe(flatMap(succ => {
+        console.log(`got token: ${succ}`); // TODO: Delete this
+        if (succ) {
+          return this.http.delete<void>(this.baseUrl + `api/user/lists/${id}`, this.getOptions()).pipe(map(res => true))
+            .pipe(catchError(err => from([false])));
+        }
+        return from([false]);
+      }));
+    }
+
+
+    return this.http.delete<void>(this.baseUrl + `api/user/lists/${id}`, this.getOptions()).pipe(map(res => true))
+      .pipe(catchError(err => from([false])));
+  }
+
   public authenticate(user: string, pass: string): Observable<boolean> {
     return this.http.post<any>(this.baseUrl + "api/login", {
       username: user, password: pass
@@ -185,7 +203,7 @@ export class RestDataSource {
         console.log(`refresh_token exp at: ${new Date(this.tokenExpiresTime(this.refresh_token))}`)
       }
       return this.auth_token != null;
-    }));
+    })).pipe(catchError(err => from([false])));
   }
 
   public register(username: string, pass: string): Observable<boolean> {
@@ -202,7 +220,7 @@ export class RestDataSource {
       console.log(response);
       this.user = response;
       return response.id !== undefined;
-    }));
+    })).pipe(catchError(err => from([false])));
   }
 
 

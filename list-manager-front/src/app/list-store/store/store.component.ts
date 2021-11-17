@@ -38,6 +38,7 @@ export class StoreComponent {
 
   public changeCategory(newCategory?: string) {
     this.selectedCategory = newCategory ?? null;
+    this.selectedPage = 1;
     // this.repository.requestLists(this.listName, this.selectedCategory ?? "", "id", this.selectedPage, this.listsPerPage);
     this.refreshLists();
   }
@@ -100,5 +101,17 @@ export class StoreComponent {
     this.listManager.setList(newList);
     this.listManager.Saved = false;
     this.router.navigate(["list-store/list-edit"]);
+  }
+
+  public deleteList(id: number) {
+    if (confirm("Do you really wabt to delete this list?")) {
+      this.repository.deleteList(id).subscribe(res => {
+        if (res) {
+          alert("List successfully deleted");
+        } else {
+          alert("Operation failed");
+        }
+      })
+    }
   }
 }

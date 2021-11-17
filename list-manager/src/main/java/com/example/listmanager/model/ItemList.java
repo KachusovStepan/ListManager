@@ -1,6 +1,8 @@
 package com.example.listmanager.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.List;
@@ -73,6 +75,7 @@ public class ItemList implements Comparable<ItemList> {
         this.category = category;
     }
 
+    @OnDelete(action = OnDeleteAction.CASCADE)
     public User getUser() { return user; }
 
     public void setUser(User user) { this.user = user; }
