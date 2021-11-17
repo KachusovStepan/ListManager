@@ -39,6 +39,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RequestMapping("/api")
 @RestController
+@Transactional
 public class UserController {
     private final IUserService userService;
     private final IListService listService;
@@ -96,15 +97,17 @@ public class UserController {
 
     //корректен ли путь семантически в соответствии с rest?
     @PostMapping("register")
-    ResponseEntity<User> registerUser(@RequestBody User user) {
+    ResponseEntity<UserToGetDto> registerUser(@RequestBody User user) {
         log.info("registerUser name: " + user.getUsername() + " pass: " + user.getPassword());
         if (userRepository.existsByUsername(user.getUsername())) {
             log.info("User with this name already exists");
-            return ResponseEntity.badRequest().build();
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
-        User savedUser = userService.saveUser(user);
+
+        User savedUser = this.userService.saveUser(user);
         userService.addRoleToUser(savedUser.getUsername(), "ROLE_USER");
-        return ResponseEntity.ok().body(savedUser);
+        UserToGetDto userToGetDto = mapper.map(savedUser, UserToGetDto.class);
+        return ResponseEntity.ok().body(userToGetDto);
     }
 
     @GetMapping("token/refresh")
@@ -174,6 +177,36 @@ public class UserController {
         CustomPage<ItemListItemVerboseToGetDto> p = new CustomPage<>(itemListToGetDtos, totalCount, totalPageCount, pageIndex, pageSize);
         return ResponseEntity.ok().body(p);
 //        return ResponseEntity.ok().body(itemListToGetDtos);
+    }
+
+    @DeleteMapping("user/lists/{itemListId}")
+    ResponseEntity deleteUserItemList(
+            @PathVariable Long itemListId,
+            Principal principal
+
+    ) {
+        if (principal == null) {
+            log.info("Principal == null");
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        String userName = principal.getName();
+        User user = this.userService.getUser(userName);
+        if (user == null) {
+            log.info("user with name " + userName + " not found in db");
+            return ResponseEntity.notFound().build();
+        }
+        if (user.getLists().stream().noneMatch(l -> l.getId() == itemListId)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        ItemList ilToDelete = itemListRepository.getById(itemListId);
+        if (ilToDelete == null) {
+            return ResponseEntity.notFound().build();
+        }
+        user.getLists().removeIf(l -> l.getId().equals(itemListId));
+        itemListRepository.delete(ilToDelete);
+//        user.getLists().removeIf(l -> l.getId() == itemListId);
+//        userRepository.save(user);
+        return ResponseEntity.ok().build();
     }
 
 

@@ -19,6 +19,12 @@
       <list-summary></list-summary>
     </div>
   </div>
+  <div
+    class="bg-danger mt-2 p-2 text-center text-dark"
+    *ngIf="errorMessage != null"
+  >
+    {{ errorMessage }}
+  </div>
   <div class="row">
     <div>
       <label class="text-dark">Name</label>
@@ -32,7 +38,7 @@
     </div>
     <div>
       <label class="text-dark">Category</label>
-      <select class="form-control" name="category" [(ngModel)]="listManager.list.category.name">
+      <select class="form-control" name="category" required [(ngModel)]="listManager.list.category.name">
         <option *ngFor="let category of CategoryNames"
         [ngValue]="category"
         >

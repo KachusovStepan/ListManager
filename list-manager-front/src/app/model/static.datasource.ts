@@ -40,7 +40,7 @@ export class StaticDataSource {
     id: 1,
     username: "Adam",
     email: "a@a.com",
-    lists: [this.lists[0]]
+    lists: this.lists.map(l => l.id ?? -1)//[this.lists[0]]
   };
 
   public getLists(): Observable<List[]> {

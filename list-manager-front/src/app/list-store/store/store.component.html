@@ -39,6 +39,11 @@
         </h4>
         <div class="card-text bg-white p-1">
           Embedded list content will go here
+          <button class="btn btn-danger btn-sm float-right"
+              style="float: right"
+              (click)="deleteList(list?.id ?? -1)">
+            X
+          </button>
           <button class="btn btn-success btn-sm float-right"
               style="float: right"
               (click)="setListToListManager(list)">

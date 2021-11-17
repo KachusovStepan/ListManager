@@ -1,6 +1,9 @@
-import {  Injectable } from "@angular/core";
-import { Observable } from "rxjs";
+import { Injectable } from "@angular/core";
+import { Observable, from } from "rxjs";
+import { catchError } from "rxjs/operators";
 import { RestDataSource } from "./rest.datasource";
+import { IUser } from "./user";
+
 
 @Injectable({
   providedIn: 'root',
@@ -25,5 +28,9 @@ export class AuthService {
 
   public register(username: string, password: string): Observable<boolean> {
     return this.datasource.register(username, password);
+  }
+
+  public getUser(): Observable<IUser | null> {
+    return this.datasource.getUser().pipe(catchError(err => from([null])));
   }
 }

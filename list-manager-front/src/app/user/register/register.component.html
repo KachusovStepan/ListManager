@@ -5,9 +5,9 @@
   </div>
   <div
     class="bg-danger mt-2 p-2 text-center text-dark"
-    *ngIf="errorMessage != null"
+    *ngIf="ErroMessage != null"
   >
-    {{ errorMessage }}
+    {{ ErroMessage }}
   </div>
   <div class="p-2">
     <form novalidate #form="ngForm" (ngSubmit)="register(form)" class="myForm">
