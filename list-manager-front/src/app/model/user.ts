@@ -4,5 +4,5 @@ export interface IUser {
   id: number;
   username: string;
   email?: string;
-  lists?: List[];
+  lists?: number[];
 }

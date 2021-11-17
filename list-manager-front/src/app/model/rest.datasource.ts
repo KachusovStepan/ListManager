@@ -166,6 +166,24 @@ export class RestDataSource {
       }));
   }
 
+  public deleteUsersList(id: number): Observable<boolean> {
+    console.log("REST DATASOURCE: deleting list");
+    if (this.refresh_token && this.tokenExpiresLessThan(this.refresh_token, 5)) {
+      return this.refreshTokens().pipe(flatMap(succ => {
+        console.log(`got token: ${succ}`); // TODO: Delete this
+        if (succ) {
+          return this.http.delete<void>(this.baseUrl + `api/user/lists/${id}`, this.getOptions()).pipe(map(res => true))
+            .pipe(catchError(err => from([false])));
+        }
+        return from([false]);
+      }));
+    }
+
+
+    return this.http.delete<void>(this.baseUrl + `api/user/lists/${id}`, this.getOptions()).pipe(map(res => true))
+      .pipe(catchError(err => from([false])));
+  }
+
   public authenticate(user: string, pass: string): Observable<boolean> {
     return this.http.post<any>(this.baseUrl + "api/login", {
       username: user, password: pass

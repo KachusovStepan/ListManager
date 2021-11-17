@@ -23,6 +23,8 @@ export class ListEditComponent {
 
   public Saving: boolean = false;
 
+  public errorMessage: string | null = null;
+
   public get Categories(): Category[] {
     return this.repository.getCategories();
   }
@@ -85,11 +87,18 @@ export class ListEditComponent {
 
   public saveList() {
     console.log(this.listManager.list);
+    if (!this.listManager.list.name || !this.listManager.list.category.name) {
+      this.errorMessage = "Name and Category are requered fields";
+      return;
+    }
     this.Saving = true;
     this.repository.saveList(this.listManager.list).subscribe(res => {
       this.Saved = res;
       this.listManager.Saved = res;
       this.Saving = false;
+      if (res) {
+        this.location.back();
+      }
     });
   }
 }

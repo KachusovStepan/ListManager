@@ -24,6 +24,7 @@ export class ListViewerComponent {
     this.router.navigate(["list-store/list-edit"]);
   }
 
+
   // public goBack() {
   //   this.location.
   // }

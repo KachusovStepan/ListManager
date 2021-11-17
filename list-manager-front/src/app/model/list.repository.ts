@@ -108,6 +108,7 @@ export class ListRepository {
     return this.lists.find(l => l.id == id);
   }
 
+
   public getCategories(): Category[] {
     return this.allCategories;
   }
@@ -136,6 +137,15 @@ export class ListRepository {
       return true;
     }
   ));
+  }
+
+  public deleteList(id: number): Observable<boolean> {
+      return this.dataSource.deleteUsersList(id).pipe(map(res => {
+        if (res) {
+          this.lists = this.lists.filter(l => l.id != id);
+        }
+        return res;
+      }));
   }
 }
 
