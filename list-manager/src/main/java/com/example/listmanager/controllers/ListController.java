@@ -1,6 +1,7 @@
 package com.example.listmanager.controllers;
 
 import java.net.URI;
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,9 +10,9 @@ import com.example.listmanager.repos.ItemListRepository;
 import com.example.listmanager.repos.UserRepository;
 import com.example.listmanager.services.IListService;
 import com.example.listmanager.services.IUserService;
+import org.hibernate.annotations.NotFound;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,16 +51,16 @@ public class ListController {
         return ResponseEntity.ok().body(categories);
     }
 
-
-    @GetMapping("/lists")
-    ResponseEntity<List<ItemList>> getAllLists() {
-        List<ItemList> lists = itemListRepository.findAll();
-        log.info("getAllLists Ok with " + lists + " elements");
-        return ResponseEntity.ok().body(lists);
-    }
-
     @GetMapping("/lists/{id}")
-    ResponseEntity<ItemList> getOneList(@PathVariable Long id) {
+    ResponseEntity<ItemList> getOneList(@PathVariable Long id, Principal principal) {
+        if (principal == null)
+            return ResponseEntity.notFound().build();
+        var user = userService.getUser(principal.getName());
+        // Будет ли СУБД вытаскивать листы из БД полностью или сравнит только id
+        if (!user.getRoles().stream().anyMatch(r -> r.getName().equals("ROLE_ADMIN"))
+            && !user.getLists().stream().anyMatch(l -> l.getId().equals(id)))
+            return ResponseEntity.notFound().build();
+
         Optional<ItemList> optionalItemList = itemListRepository.findById(id);
         if (optionalItemList.isPresent()) {
             log.info("getOneList Ok found with id: " + id);
@@ -76,7 +77,6 @@ public class ListController {
         log.info("newItemList created at: " + location.toString());
         return ResponseEntity.created(location).body(savedItemList);
     }
-
 
     @DeleteMapping("/lists/{id}")
     ResponseEntity<?> deleteItemList(@PathVariable Long id) {
@@ -99,26 +99,4 @@ public class ListController {
         List<ItemList> userLists = user.getLists();
         return ResponseEntity.ok().body(userLists);
     }
-
-//    @PutMapping("/users/{userId}/lists")
-//    ResponseEntity<ItemList> saveUserList(@PathVariable Long userId, @RequestBody ItemList newItemList) {
-//        User user = userRepository.getById(userId);
-//        if (user == null) {
-//            return ResponseEntity.notFound().build();
-//        }
-//        if (newItemList.getId() != null) {
-//            if (itemListRepository.existsById(newItemList.getId())) {
-//                if (user.getLists().stream().anyMatch(il -> il.getId() == newItemList.getId())) {
-//                    ItemList updatedList = listService.saveList(newItemList);
-//                    return ResponseEntity.ok().body(updatedList);
-//                } else {
-//                    return ResponseEntity.status(HttpStatus.CONFLICT).build();
-//                }
-////                ItemList itemListFromRepo = optionalItemList.get();
-//            }
-//        }
-//        ItemList createdItemList = listService.saveList(newItemList);
-//        List<ItemList> userLists = user.getLists();
-//        return ResponseEntity.ok().body(userLists);
-//    }
 }
