@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/test")
+//как разрешить определённые пути только для разработки?
 public class TestController {
     private static final Logger log = LoggerFactory.getLogger(TestController.class);
     private final IUserService userService;

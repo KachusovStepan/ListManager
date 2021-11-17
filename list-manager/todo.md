@@ -1,0 +1,1 @@
+1. controllers.UserController.@PostMapping("register") - сделать DTO, чтобы ограничить

@@ -44,18 +44,18 @@ public class UserController {
     private final IListService listService;
 
     private final ItemListRepository itemListRepository;
-    private final ItemRepository itemRepository;
     private final CategoryRepository categoryRepository;
     private final ItemStatusRepository itemStatusRepository;
     private final UserRepository userRepository;
+
     private final ModelMapper mapper;
 
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
+
     public UserController(
             IUserService userService, IListService listService,
 
             ItemListRepository itemListRepository,
-            ItemRepository itemRepository,
             CategoryRepository categoryRepository,
             ItemStatusRepository itemStatusRepository,
             UserRepository userRepository,
@@ -65,7 +65,6 @@ public class UserController {
         this.listService = listService;
 
         this.itemListRepository = itemListRepository;
-        this.itemRepository = itemRepository;
         this.categoryRepository = categoryRepository;
         this.itemStatusRepository = itemStatusRepository;
         this.userRepository = userRepository;
@@ -73,16 +72,19 @@ public class UserController {
         this.mapper = mapper;
     }
 
+    //если principal == null (потому что нет или не корректный для объектного представления) это UNAUTHORIZED или BADREQUEST?
+    //если principal есть, но по имени не найден пользователь в БД, то это NotFOUND или UNOUTHORIZED или что?
+    //и вообще возможно ли второе без первого?
     @GetMapping("user")
     ResponseEntity<UserToGetDto> getCurrentUser(Principal principal) {
         log.info("getCurrentUser");
         if (principal == null) {
             log.info("Principal == null");
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         String userName = principal.getName();
         log.info("Principal.Name == " + userName);
-        User user = this.userService.getUser(userName);
+        User user = userService.getUser(userName);
         if (user == null) {
             log.info("user not found in db");
             return ResponseEntity.notFound().build();
@@ -92,16 +94,16 @@ public class UserController {
         return ResponseEntity.ok().body(userToGetDto);
     }
 
+    //корректен ли путь семантически в соответствии с rest?
     @PostMapping("register")
     ResponseEntity<User> registerUser(@RequestBody User user) {
         log.info("registerUser name: " + user.getUsername() + " pass: " + user.getPassword());
-        User userFound = this.userService.getUser(user.getUsername());
-        if (userFound != null) {
+        if (userRepository.existsByUsername(user.getUsername())) {
             log.info("User with this name already exists");
             return ResponseEntity.badRequest().build();
         }
-        User savedUser = this.userService.saveUser(user);
-        this.userService.addRoleToUser(savedUser.getUsername(), "ROLE_USER");
+        User savedUser = userService.saveUser(user);
+        userService.addRoleToUser(savedUser.getUsername(), "ROLE_USER");
         return ResponseEntity.ok().body(savedUser);
     }
 
@@ -291,31 +293,31 @@ public class UserController {
 }
 
 
-class ResponseSimpleInfo {
-    String status;
-    String message;
-
-    public ResponseSimpleInfo(String status, String message) {
-        this.status = status;
-        this.message = message;
-    }
-
-    public ResponseSimpleInfo() {
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-}
+//class ResponseSimpleInfo {
+//    String status;
+//    String message;
+//
+//    public ResponseSimpleInfo(String status, String message) {
+//        this.status = status;
+//        this.message = message;
+//    }
+//
+//    public ResponseSimpleInfo() {
+//    }
+//
+//    public String getStatus() {
+//        return status;
+//    }
+//
+//    public void setStatus(String status) {
+//        this.status = status;
+//    }
+//
+//    public String getMessage() {
+//        return message;
+//    }
+//
+//    public void setMessage(String message) {
+//        this.message = message;
+//    }
+//}
