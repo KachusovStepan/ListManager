@@ -98,7 +98,7 @@ public class UserController {
         User userFound = this.userService.getUser(user.getUsername());
         if (userFound != null) {
             log.info("User with this name already exists");
-            return ResponseEntity.badRequest().build();
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
         User savedUser = this.userService.saveUser(user);
         this.userService.addRoleToUser(savedUser.getUsername(), "ROLE_USER");

@@ -22,6 +22,10 @@ export class RegisterComponent {
 
   }
 
+  public get ErroMessage() {
+    return this.errorMessage;
+  }
+
   public register(form: NgForm) {
     if (form.valid) {
       this.auth.register(this.username, this.password)

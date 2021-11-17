@@ -2,7 +2,7 @@ import { ComponentFactoryResolver, Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { from, Observable } from "rxjs";
 import { List, ListToGetDto } from "./list.model";
-import { map } from "rxjs/operators";
+import { map, catchError } from "rxjs/operators";
 import { HttpHeaders } from "@angular/common/http";
 import { ItemStatus } from "./itemstatus.model";
 import { IUser } from "./user";
@@ -185,7 +185,7 @@ export class RestDataSource {
         console.log(`refresh_token exp at: ${new Date(this.tokenExpiresTime(this.refresh_token))}`)
       }
       return this.auth_token != null;
-    }));
+    })).pipe(catchError(err => from([false])));
   }
 
   public register(username: string, pass: string): Observable<boolean> {
@@ -202,7 +202,7 @@ export class RestDataSource {
       console.log(response);
       this.user = response;
       return response.id !== undefined;
-    }));
+    })).pipe(catchError(err => from([false])));
   }
 
 

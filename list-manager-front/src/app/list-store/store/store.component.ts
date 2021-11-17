@@ -38,6 +38,7 @@ export class StoreComponent {
 
   public changeCategory(newCategory?: string) {
     this.selectedCategory = newCategory ?? null;
+    this.selectedPage = 1;
     // this.repository.requestLists(this.listName, this.selectedCategory ?? "", "id", this.selectedPage, this.listsPerPage);
     this.refreshLists();
   }
