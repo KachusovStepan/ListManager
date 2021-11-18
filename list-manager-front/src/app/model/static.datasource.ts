@@ -75,21 +75,26 @@ export class StaticDataSource {
     return from([page]);
   }
 
+  public getListsWithParamsUsingUserId(userId: number, listName: string = "", categoryName: string = "", sortBy: string = "id",
+    pageIndex: number = 0, pageSize: number = 4): Observable<CustomPage<ListToGetDto>> {
+      return this.getListsWithParams(listName, categoryName, sortBy, pageIndex, pageSize);
+  }
+
   public getUsersWithParams(
-    roleId: number | null = null,
-    sortBy: string = "id", pageIndex: number = 0,
-    pageSize: number = 8): Observable<CustomPage<IUser>> {
-      console.log("request users");
-  let totalCount = this.users.length;
-  let totalPageCount = Math.ceil(totalCount / pageSize);
-  let start = pageSize * (pageIndex);
-  let end = Math.min(totalCount, start + pageSize);
-  console.log(` > getUsersWithParams: (${start}, ${end})`);
-  let data = this.users.slice(start, end);
-  let page = new CustomPage<IUser>(totalCount, totalPageCount, pageIndex, pageSize, data);
-  console.log(data);
-  return from([page]);
-}
+      roleId: number | null = null,
+      sortBy: string = "id", pageIndex: number = 0,
+      pageSize: number = 8): Observable<CustomPage<IUser>> {
+        console.log("request users");
+    let totalCount = this.users.length;
+    let totalPageCount = Math.ceil(totalCount / pageSize);
+    let start = pageSize * (pageIndex);
+    let end = Math.min(totalCount, start + pageSize);
+    console.log(` > getUsersWithParams: (${start}, ${end})`);
+    let data = this.users.slice(start, end);
+    let page = new CustomPage<IUser>(totalCount, totalPageCount, pageIndex, pageSize, data);
+    console.log(data);
+    return from([page]);
+  }
 
   public getItemStatus(): Observable<ItemStatus[]> {
     return from([this.itemsStatuses]);
@@ -105,6 +110,10 @@ export class StaticDataSource {
 
   public getUser(): Observable<IUser> {
     return from([this.user]);
+  }
+
+  public getListById(id: number): Observable<ListToGetDto> {
+    return from([this.listToGetDtos[0]]);
   }
 
   public authenticate(user: string, pass: string): Observable<boolean> {

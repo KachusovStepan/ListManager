@@ -45,9 +45,9 @@ export class AdminRepository {
       this.roles = data[3];
 
       console.log(`Requesting init data`);
-      this.requestLists().subscribe(
-        succ => console.log(`requestsed: success: ${succ}`)
-      );
+      // this.requestLists().subscribe(
+      //   succ => console.log(`requestsed: success: ${succ}`)
+      // );
     });
   }
 
@@ -62,13 +62,13 @@ export class AdminRepository {
   }
 
   public requestLists(
-      listName: string = "", categoryName: string = "", sortBy: string = "id",
+      userId: number, listName = "", categoryName: string = "", sortBy: string = "id",
       pageIndex: number = 0, pageSize: number = 4): Observable<boolean> {
     if (this.user === null) {
       console.log("$> requestLists: user not set");
       return from([false]);
     }
-    return this.dataSource.getListsWithParams(listName, categoryName, sortBy, pageIndex, pageSize).pipe(
+    return this.dataSource.getListsWithParamsUsingUserId(userId, listName, categoryName, sortBy, pageIndex, pageSize).pipe(
       map(page => {
         this.listTotalCount = page.totalCount;
         this.listTotalPageCount = page.totalPageCount;

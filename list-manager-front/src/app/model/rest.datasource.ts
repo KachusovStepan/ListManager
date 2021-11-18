@@ -113,6 +113,20 @@ export class RestDataSource {
     return this.http.get<CustomPage<IUser>>(url, this.getOptions());
   }
 
+  public getListsWithParamsUsingUserId(userId: number, listName: string = "", categoryName: string = "", sortBy: string = "id",
+      pageIndex: number = 0, pageSize: number = 4): Observable<CustomPage<ListToGetDto>> {
+    let url = this.baseUrl + `api/users/${userId}/lists?name=${listName}&categoryName=${categoryName}&sortBy=${sortBy}&pageIndex=${pageIndex}&pageSize=${pageSize}`
+    if (this.refresh_token && this.tokenExpiresLessThan(this.refresh_token!, 5)) {
+      return this.refreshTokens().pipe(flatMap(succ => {
+        if (succ) {
+          return this.http.get<CustomPage<ListToGetDto>>(url, this.getOptions());
+        }
+        throw Error("unable to refresh token");
+      }));
+    }
+    return this.http.get<CustomPage<ListToGetDto>>(url, this.getOptions());
+  }
+
   public getItemStatus(): Observable<ItemStatus[]> {
     if (this.refresh_token && this.tokenExpiresLessThan(this.refresh_token, 5)) {
       return this.refreshTokens().pipe(flatMap(succ => {

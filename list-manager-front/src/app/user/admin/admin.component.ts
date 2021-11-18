@@ -7,6 +7,7 @@ import { ListRepository } from "src/app/model/list.repository";
 import { AdminRepository } from "src/app/model/admin.repository";
 import { Category } from "src/app/model/category.model";
 import { Role } from "src/app/model/role.model";
+import { List } from "src/app/model/list.model";
 
 @Component({
   templateUrl: "admin.component.html"
@@ -29,6 +30,8 @@ export class AdminComponent {
   public selectedUser: IUser | null = null;
   public selectedRole: Role | null = null;
   public selectedRoleId: number = 0;
+
+  public selectedList: List | null = null;
 
   public constructor(
       private router: Router,
@@ -79,7 +82,7 @@ export class AdminComponent {
   public changeUser(user: IUser) {
     this.selectedUser = user ?? null;
     this.selectedListPage = 1;
-    // this.refreshLists();
+    this.refreshLists();
   }
 
   public refreshUsers() {
@@ -102,16 +105,49 @@ export class AdminComponent {
       .fill(0).map((x, i) => i + 1);
   }
 
-  // public refreshLists() {
-  //   this.requestingData = true;
-  //   this.repository.requestUsers(
-  //       this.selectedUser, this.selectedCategory,
-  //       this.selectedUserPage - 1, this.usersPerPage)
-  //     .subscribe(success => {
-  //       this.requestingData = false;
-  //       console.log(`Users requestsed, success: ${success}`);
-  //     });
-  // }
+  // BR: Lists
+
+  public get Lists() {
+    return this.repository.getLists();
+  }
+  public changeListPage(newPage: number) {
+    this.selectedListPage = newPage;
+    this.refreshLists();
+  }
+
+  public changeListPageSize(newSize: number) {
+    this.listsPerPage = Number(newSize);
+    this.selectedListPage = 1;
+    this.refreshLists();
+  }
+
+  public get listPageCount(): number {
+    return this.repository.listTotalPageCount;
+  }
+
+  public get listPageNumbers(): number[] {
+    return Array(this.listPageCount)
+      .fill(0).map((x, i) => i + 1);
+  }
+
+  public refreshLists() {
+    if (this.selectedUser === null) {
+      return;
+    }
+    this.requestingData = true;
+    this.repository.requestLists(
+        this.selectedUser?.id, "", this.selectedCategory ?? undefined, "id",
+        this.selectedListPage - 1, this.listsPerPage)
+      .subscribe(success => {
+        this.requestingData = false;
+        console.log(`Lists requestsed, success: ${success}`);
+      });
+  }
+
+  // BR: Lists
+  public selectList(list: List) {
+    this.selectedList = list;
+  }
 
 }
 

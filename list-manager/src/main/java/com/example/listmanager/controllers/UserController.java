@@ -298,6 +298,47 @@ public class UserController {
         return ResponseEntity.ok().body(p);
 //        return ResponseEntity.ok().body(itemListToGetDtos);
     }
+
+    @GetMapping("/users/{userId}/lists")
+    ResponseEntity<CustomPage<ItemListItemVerboseToGetDto>> getUserItemListsUsingUserId(
+            Principal principal,
+            @PathVariable Long userId,
+            @RequestParam(value = "sortBy", defaultValue="id", required = false) String sortBy,
+            @RequestParam(value = "pageIndex",  defaultValue="0",  required = false) int pageIndex,
+            @RequestParam(value = "pageSize",  defaultValue="8",  required = false) int pageSize,
+            @RequestParam(value = "name", defaultValue="", required = false) String name,
+            @RequestParam(value = "categoryName", defaultValue="", required = false) String categoryName
+    ) {
+        if (principal == null) {
+            log.info("Principal == null");
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        String userName = principal.getName();
+        User user = this.userService.getUser(userName);
+        if (user == null) {
+            log.info("user with name " + userName + " not found in db");
+            return ResponseEntity.notFound().build();
+        }
+        if (user.getRoles().stream().noneMatch(r -> r.getName().equals("ROLE_ADMIN"))) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        if (!sortBy.equals("category") && !sortBy.equals("name") && !sortBy.equals("id")) {
+            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+        User listOwner = userRepository.getById(userId);
+        if (listOwner == null) {
+            return ResponseEntity.notFound().build();
+        }
+        Sort sort = Sort.by(Sort.Direction.ASC, sortBy);
+        Page<ItemList> lists = itemListRepository.getAllByUserAndCategory_NameContainingAndNameContaining(listOwner, categoryName, name, PageRequest.of(pageIndex, pageSize, sort));
+        int totalCount = (int) lists.getTotalElements();
+        int totalPageCount = lists.getTotalPages();
+        List<ItemListItemVerboseToGetDto> itemListToGetDtos = lists.stream()
+                .map(il -> mapper.map(il, ItemListItemVerboseToGetDto.class)).collect(Collectors.toList());
+        CustomPage<ItemListItemVerboseToGetDto> p = new CustomPage<>(itemListToGetDtos, totalCount, totalPageCount, pageIndex, pageSize);
+        return ResponseEntity.ok().body(p);
+//        return ResponseEntity.ok().body(itemListToGetDtos);
+    }
 }
 
 

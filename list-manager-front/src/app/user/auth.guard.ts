@@ -16,6 +16,7 @@ export class AuthGuard {
     ): boolean
   {
     if (!this.auth.isAdmin && state.url == '/user/admin') {
+      this.router.navigateByUrl("/user/auth");
       return false;
     }
     // console.log("Auth: " + state.url);

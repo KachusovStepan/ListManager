@@ -97,13 +97,13 @@ public class ListController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/users/{userId}/lists")
-    ResponseEntity<List<ItemList>> getUserLists(@PathVariable Long userId) {
-        User user = userRepository.getById(userId);
-        if (user == null) {
-            return ResponseEntity.notFound().build();
-        }
-        List<ItemList> userLists = user.getLists();
-        return ResponseEntity.ok().body(userLists);
-    }
+//    @GetMapping("/users/{userId}/lists")
+//    ResponseEntity<List<ItemList>> getUserLists(@PathVariable Long userId) {
+//        User user = userRepository.getById(userId);
+//        if (user == null) {
+//            return ResponseEntity.notFound().build();
+//        }
+//        List<ItemList> userLists = user.getLists();
+//        return ResponseEntity.ok().body(userLists);
+//    }
 }
