@@ -48,6 +48,7 @@ public class UserController {
     private final CategoryRepository categoryRepository;
     private final ItemStatusRepository itemStatusRepository;
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
 
     private final ModelMapper mapper;
 
@@ -60,6 +61,7 @@ public class UserController {
             CategoryRepository categoryRepository,
             ItemStatusRepository itemStatusRepository,
             UserRepository userRepository,
+            RoleRepository roleRepository,
             ModelMapper mapper
     ) {
         this.userService = userService;
@@ -69,6 +71,7 @@ public class UserController {
         this.categoryRepository = categoryRepository;
         this.itemStatusRepository = itemStatusRepository;
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
 
         this.mapper = mapper;
     }
@@ -210,73 +213,6 @@ public class UserController {
     }
 
 
-//    @GetMapping("user/lists")
-//    ResponseEntity<List<ItemList>> getUserLists(
-//            Principal principal,
-//            @RequestParam(value = "category", required = false) String category,
-//            @RequestParam(value = "sort", required = false) String sort
-//    ) {
-//        log.info("getUserLists");
-//        if (principal == null) {
-//            log.info("Principal == null");
-//            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-//        }
-//        String userName = principal.getName();
-//        User user = this.userService.getUser(userName);
-//        if (user == null) {
-//            log.info("user with name " + userName + " not found in db");
-//            return ResponseEntity.notFound().build();
-//        }
-//        log.info("Returning Ok with " + user.getLists().size() + " elements");
-//
-//        List<ItemList> resultLists = user.getLists();
-//        if (category != null && category.length() > 0) {
-//            Category requestedCategory = categoryRepository.findByName(category);
-//            if (requestedCategory == null) {
-//                ResponseEntity.ok().body(new ArrayList<>());
-//            }
-//            resultLists = resultLists.stream()
-//                    .filter(l -> l.getCategory().getId() == requestedCategory.getId())
-//                    .collect(Collectors.toList());
-//        }
-//        if (sort != null && sort.length() > 0) {
-//            boolean success = sortItemListsBy(resultLists, sort);
-//            if (!success) {
-//                return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
-//            }
-//        }
-//        return ResponseEntity.ok().body(resultLists);
-//    }
-//
-//    private boolean sortItemListsBy(List<ItemList> list, String sortParam) {
-//        String[] parts = sortParam.split(",");
-//        if (parts[0].equals("name")) {
-//            if (parts.length > 1 && parts[1] == "desc") {
-//                list.sort((l1, l2) -> -l1.getName().compareTo(l2.getName()));
-//            } else {
-//                list.sort(Comparator.comparing(ItemList::getName));
-//            }
-//            return true;
-//        }
-//        if (parts[0].equals("category")) {
-//            if (parts.length > 1 && parts[1].equals("desc")) {
-//                list.sort((l1, l2) -> -l1.getCategory().getName().compareTo(l2.getCategory().getName()));
-//            } else {
-//                list.sort(Comparator.comparing(l -> l.getCategory().getName()));
-//            }
-//            return true;
-//        }
-//        if (parts[0].equals("count")) {
-//            if (parts.length > 1 && parts[1].equals("desc")) {
-//                list.sort((l1, l2) -> -(l1.getItems().size() - l2.getItems().size()));
-//            } else {
-//                list.sort(Comparator.comparingInt(l -> l.getItems().size()));
-//            }
-//            return true;
-//        }
-//        return false;
-//    }
-
     @PostMapping("user/lists")
     @Transactional
     ResponseEntity<ItemListItemVerboseToGetDto> saveUserList(Principal principal, @RequestBody ItemList toSave) {
@@ -317,11 +253,50 @@ public class UserController {
         return ResponseEntity.ok().body(res);
     }
 
-    @GetMapping("/users")
-    List<User> getAllUsers() {
-        List<User> users = userService.getUsers();
-        log.info("getAllUsers Ok with " + users.size() + " elements");
-        return users;
+//    @GetMapping("/users")
+//    List<User> getAllUsers() {
+//        List<User> users = userService.getUsers();
+//        log.info("getAllUsers Ok with " + users.size() + " elements");
+//        return users;
+//    }
+
+    @GetMapping("users")
+    ResponseEntity<CustomPage<UserToGetDto>> getUserItemLists(
+            Principal principal,
+            @RequestParam(value = "sortBy", defaultValue="id", required = false) String sortBy,
+            @RequestParam(value = "pageIndex",  defaultValue="0",  required = false) int pageIndex,
+            @RequestParam(value = "pageSize",  defaultValue="8",  required = false) int pageSize,
+            @RequestParam(value = "roleId", defaultValue="", required = false) Long roleId
+    ) {
+        if (principal == null) {
+            log.info("Principal == null");
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        String userName = principal.getName();
+        User user = this.userService.getUser(userName);
+        if (user == null) {
+            log.info("user with name " + userName + " not found in db");
+            return ResponseEntity.notFound().build();
+        }
+        if (user.getRoles().stream().noneMatch(r -> r.getName().equals("ROLE_ADMIN"))) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        Sort sort = Sort.by(Sort.Direction.ASC, sortBy);
+
+        Page<User> users;
+        if (roleId != null) {
+            Role role = roleRepository.getById(roleId);
+            users = userRepository.getAllByRolesIsContaining(role, PageRequest.of(pageIndex, pageSize, sort));
+        } else {
+            users = userRepository.findAll(PageRequest.of(pageIndex, pageSize, sort));
+        }
+        int totalCount = (int) users.getTotalElements();
+        int totalPageCount = users.getTotalPages();
+        List<UserToGetDto> itemListToGetDtos = users.stream()
+                .map(il -> mapper.map(il, UserToGetDto.class)).collect(Collectors.toList());
+        CustomPage<UserToGetDto> p = new CustomPage<>(itemListToGetDtos, totalCount, totalPageCount, pageIndex, pageSize);
+        return ResponseEntity.ok().body(p);
+//        return ResponseEntity.ok().body(itemListToGetDtos);
     }
 }
 

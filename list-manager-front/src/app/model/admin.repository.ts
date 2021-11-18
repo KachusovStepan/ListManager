@@ -11,32 +11,30 @@ import { CustomPage } from "./customPage.model";
 import { Role } from "./role.model";
 
 @Injectable()
-export class ListRepository {
+export class AdminRepository {
   private lists: List[] = [];
   private categories: Category[] = [];
   private allCategories: Category[] = [];
   private itemStatuses: ItemStatus[] = [];
   private roles: Role[] = [];
   private user: IUser | null = null;
-  public totalCount: number = 0;
-  public totalPageCount: number = 0;
-  public pageIndex: number = 0;
-  public pageSize: number = 0;
+  private users: IUser[] = [];
+  public publicSelectedUser: IUser | null = null;
+
+  public listTotalCount: number = 0;
+  public listTotalPageCount: number = 0;
+  public listPageIndex: number = 0;
+  public listPageSize: number = 0;
+
+  public userTotalCount: number = 0;
+  public userTotalPageCount: number = 0;
+  public userPageIndex: number = 0;
+  public userPageSize: number = 0;
 
   constructor(private dataSource: RestDataSource) {
-    console.log("ListRepository INIT");
-    // this.requestAll().subscribe(data => {
-    //   this.lists = data[0];
-    //   this.categories = data[0].map((l: List) => l.category)
-    //     .filter((c: Category, index: number, array: Category[]) => array.indexOf(c) == index)
-    //     .filter(notEmpty)
-    //     .sort();
-    //   this.itemStatuses = data[1];
-    //   console.log("Get data from datasource");
-    //   console.log(this.lists);
-    //   console.log(this.categories);
-    // });
+    console.log("AdminRepository INIT");
     this.setUpData();
+    this.requestUsers();
   }
 
   public setUpData(): void {
@@ -44,20 +42,11 @@ export class ListRepository {
       this.user = data[0];
       this.itemStatuses = data[1];
       this.allCategories = data[2];
+      this.roles = data[3];
 
-      // LOG
-      console.log("Get data from datasource:");
-      console.log("User");
-      console.log(this.user);
-      console.log("allCategories");
-      console.log(this.allCategories);
-      console.log("ItemStatuses");
-      console.log(this.itemStatuses);
-
-
-      console.log(`Requesting lists`);
+      console.log(`Requesting init data`);
       this.requestLists().subscribe(
-        succ => console.log(`requestsed lists: success: ${succ}`)
+        succ => console.log(`requestsed: success: ${succ}`)
       );
     });
   }
@@ -67,6 +56,7 @@ export class ListRepository {
     tasks.push(this.dataSource.getUser()); // 0
     tasks.push(this.dataSource.getItemStatus()); // 1
     tasks.push(this.dataSource.getCategories()); // 2
+    tasks.push(this.dataSource.getRoles()); // 3
     let sub = forkJoin(tasks);
     return sub;
   }
@@ -80,39 +70,54 @@ export class ListRepository {
     }
     return this.dataSource.getListsWithParams(listName, categoryName, sortBy, pageIndex, pageSize).pipe(
       map(page => {
-        this.totalCount = page.totalCount;
-        this.totalPageCount = page.totalPageCount;
-        this.pageIndex = page.pageIndex;
-        this.pageSize = page.pageSize;
+        this.listTotalCount = page.totalCount;
+        this.listTotalPageCount = page.totalPageCount;
+        this.listPageIndex = page.pageIndex;
+        this.listPageSize = page.pageSize;
         this.lists = [];
         for (let list of page.data) {
           let newList: List = ListToGetDto2List(list);
           newList.category = this.allCategories.find(l => l.id == list.category) ?? new Category();
           this.lists.push(newList);
         }
-        console.log(`ListRepository: got list data ${this.lists.length}`);
-        console.log(this.lists.length);
         return true;
       })
     )
   }
 
-  public getRawLists() {
+  public requestUsers(
+    roleId: number | null = null, sortBy: string = "id",
+    pageIndex: number = 0, pageSize: number = 4): Observable<boolean> {
+  if (this.user === null) {
+    console.log("$> requestUsers: user not set");
+    return from([false]);
+  }
+  return this.dataSource.getUsersWithParams(roleId, sortBy, pageIndex, pageSize).pipe(
+    map(page => {
+      this.userTotalCount = page.totalCount;
+      this.userTotalPageCount = page.totalPageCount;
+      this.userPageIndex = page.pageIndex;
+      this.userPageSize = page.pageSize;
+      this.users = page.data;
+      return true;
+    })
+  )
+}
+
+  public getLists() {
     return this.lists;
   }
 
-  public getLists(category: string | null = null): List[] {
-    return this.lists
-      .filter(l => category == null || category == l.category?.name);
+  public getUsers() {
+    return this.users;
   }
-
-  public getList(id: number): List | undefined {
-    return this.lists.find(l => l.id == id);
-  }
-
 
   public getCategories(): Category[] {
     return this.allCategories;
+  }
+
+  public getRoles(): Role[] {
+    return this.roles;
   }
 
   public getItemStatuses(): ItemStatus[] {

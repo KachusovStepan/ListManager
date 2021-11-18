@@ -1,0 +1,115 @@
+
+<div class="contrainer-fluid d-flex flex-column h-100">
+  <div class="row h-100 align-self-stretch">
+    <div class="col-3 p-2">
+      <!-- BR: users -->
+      <h4 class="p-2 text-center">Users:</h4>
+      <div class="form-inline float-left mr-1 mt-auto">
+        <select  class="form-control" (change)="changeRole(($any($event.target)).value)" [(ngModel)]="selectedRole">
+          <option [value]="null">
+            All
+          </option>
+          <option *ngFor="let role of Roles" [value]="role">
+            {{role.name}}
+          </option>
+      </select>
+        <!-- <select class="form-control" [value]="selectedRoleId"
+            (change)="changeRole(($any($event.target)).value)" [class.disabled]="requestingData">
+            <option value="0">
+              All
+            </option>
+            <option *ngFor="let role of Roles" value={{role.id}}>
+              {{role.name}}
+            </option>
+        </select> -->
+      </div>
+
+      <button *ngFor="let user of Users"
+          class="btn btn-outline-dark btn-block w-100"
+          [class.active]="user == selectedUser"
+          [class.disabled]="requestingData"
+          (click)="changeUser(user)">
+        {{user.username}}
+      </button>
+
+
+      <div class="form-inline float-left mr-1 mt-auto">
+        <select class="form-control" [value]="listsPerPage"
+            (change)="changeUserPageSize(($any($event.target)).value)" [class.disabled]="requestingData">
+          <option value="3">3 per Page</option>
+          <option value="4">4 per Page</option>
+          <option value="6">6 per Page</option>
+          <option value="8">8 per Page</option>
+        </select>
+      </div>
+      <div class="btn-group float-right">
+        <button *ngFor="let page of userPageNumbers"
+            (click)="changeUserPage(page)"
+            class="btn btn-outline-dark"
+            [class.disabled]="requestingLists"
+            [class.active]="page == selectedUserPage">
+          {{page}}
+        </button>
+      </div>
+    </div>
+    <!-- BR: users -->
+    <!-- <div class="col-3 p-2">
+      <h4 class="p-2 text-center">Categories:</h4>
+      <button class="btn btn-block btn-outline-dark w-100" (click)="changeCategory()">
+        All
+      </button>
+      <button *ngFor="let category of categories"
+          class="btn btn-outline-dark btn-block w-100"
+          [class.active]="category == selectedCategory"
+          [class.disabled]="requestingLists"
+          (click)="changeCategory(category)">
+        {{category}}
+      </button>
+    </div>
+    <div class="col-6 bg-secondary p-2 h-100 d-flex flex-column pb-3">
+
+      <div *ngFor="let list of lists" class="card m-1 p-1 bg-light">
+        <h4>
+          {{list.name}}
+          <span class="badge badge-pill badge-primary float-right text-warning" style="float: right">
+            {{list.items?.length}}
+          </span>
+        </h4>
+        <div class="card-text bg-white p-1">
+          Embedded list content will go here
+          <button class="btn btn-danger btn-sm float-right"
+              style="float: right"
+              (click)="deleteList(list?.id ?? -1)">
+            X
+          </button>
+          <button class="btn btn-success btn-sm float-right"
+              style="float: right"
+              (click)="setListToListManager(list)">
+            View List
+          </button>
+        </div>
+      </div>
+
+      <div class="form-inline float-left mr-1 mt-auto">
+        <select class="form-control" [value]="listsPerPage"
+            (change)="changePageSize(($any($event.target)).value)" [class.disabled]="requestingLists">
+          <option value="3">3 per Page</option>
+          <option value="4">4 per Page</option>
+          <option value="6">6 per Page</option>
+          <option value="8">8 per Page</option>
+        </select>
+      </div>
+
+      <div class="btn-group float-right">
+        <button *ngFor="let page of pageNumbers"
+            (click)="changeListPage(page)"
+            class="btn btn-outline-light"
+            [class.disabled]="requestingLists"
+            [class.active]="page == selectedPage">
+          {{page}}
+        </button>
+      </div>
+
+    </div> -->
+  </div>
+</div>

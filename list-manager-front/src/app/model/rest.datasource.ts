@@ -9,6 +9,7 @@ import { IUser } from "./user";
 import { Category } from "./category.model";
 import { CustomPage } from "./customPage.model";
 import { flatMap } from "rxjs/internal/operators";
+import { Role } from "./role.model";
 
 const PROTOCOL = "http";
 const PORT = 8080;
@@ -93,6 +94,25 @@ export class RestDataSource {
       this.baseUrl + `api/user/lists?name=${listName}&categoryName=${categoryName}&sortBy=${sortBy}&pageIndex=${pageIndex}&pageSize=${pageSize}`, this.getOptions());
   }
 
+  public getUsersWithParams(roleId: number | null = null, sortBy: string = "id", pageIndex: number = 0, pageSize: number = 8): Observable<CustomPage<IUser>> {
+    let url = this.baseUrl + `api/users?`;
+    if (roleId !== null) {
+      url += `roleId=${roleId}&`;
+    }
+    url +=`sortBy=${sortBy}&pageIndex=${pageIndex}&pageSize=${pageSize}`;
+
+    if (this.refresh_token && this.tokenExpiresLessThan(this.refresh_token!, 5)) {
+      return this.refreshTokens().pipe(flatMap(succ => {
+        console.log(`got token: ${succ}`); // TODO: Delete this
+        if (succ) {
+          return this.http.get<CustomPage<IUser>>(url, this.getOptions());
+        }
+        throw Error("unable to refresh token");
+      }));
+    }
+    return this.http.get<CustomPage<IUser>>(url, this.getOptions());
+  }
+
   public getItemStatus(): Observable<ItemStatus[]> {
     if (this.refresh_token && this.tokenExpiresLessThan(this.refresh_token, 5)) {
       return this.refreshTokens().pipe(flatMap(succ => {
@@ -111,7 +131,6 @@ export class RestDataSource {
   public getCategories(): Observable<Category[]> {
     if (this.refresh_token && this.tokenExpiresLessThan(this.refresh_token, 5)) {
       return this.refreshTokens().pipe(flatMap(succ => {
-        console.log(`got token: ${succ}`); // TODO: Delete this
         if (succ) {
           return this.http.get<Category[]>(
             this.baseUrl + "api/categories", this.getOptions());
@@ -121,6 +140,20 @@ export class RestDataSource {
     }
     return this.http.get<Category[]>(
       this.baseUrl + "api/categories", this.getOptions());
+  }
+
+  public getRoles(): Observable<Role[]> {
+    if (this.refresh_token && this.tokenExpiresLessThan(this.refresh_token, 5)) {
+      return this.refreshTokens().pipe(flatMap(succ => {
+        if (succ) {
+          return this.http.get<Role[]>(
+            this.baseUrl + "api/roles", this.getOptions());
+        }
+        throw Error("unable to refresh token");
+      }));
+    }
+    return this.http.get<Role[]>(
+      this.baseUrl + "api/roles", this.getOptions());
   }
 
   public getUser(): Observable<IUser> {
