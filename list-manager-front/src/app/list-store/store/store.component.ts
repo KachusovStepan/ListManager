@@ -22,13 +22,9 @@ export class StoreComponent {
     private router: Router
   ) {
     repository.setUpData();
-    // this.refreshLists();
   }
 
   public get lists(): List[] {
-    // let pageIndex = (this.selectedPage - 1) * this.listsPerPage;
-    // return this.repository.getLists(this.selectedCategory)
-    //   .slice(pageIndex, pageIndex + this.listsPerPage);
     return this.repository.getRawLists();
   }
 
@@ -39,20 +35,17 @@ export class StoreComponent {
   public changeCategory(newCategory?: string) {
     this.selectedCategory = newCategory ?? null;
     this.selectedPage = 1;
-    // this.repository.requestLists(this.listName, this.selectedCategory ?? "", "id", this.selectedPage, this.listsPerPage);
     this.refreshLists();
   }
 
   public changePage(newPage: number) {
     this.selectedPage = newPage;
-    // this.repository.requestLists(this.listName, this.selectedCategory ?? "", "id", this.selectedPage, this.listsPerPage);
     this.refreshLists();
   }
 
   public changePageSize(newSize: number) {
     this.listsPerPage = Number(newSize);
     this.selectedPage = 1;
-    // this.repository.requestLists(this.listName, this.selectedCategory ?? "", "id", this.selectedPage, this.listsPerPage);
     this.refreshLists();
   }
 
@@ -68,31 +61,23 @@ export class StoreComponent {
   }
 
   public get pageCount(): number {
-    // let pcount = Math.ceil(this.repository
-    //   .getLists(this.selectedCategory).length / this.listsPerPage);
-    // console.log("PCount: ", pcount);
     let pcount = this.repository.totalPageCount;
     console.log("totalPageCount: ", pcount);
     return pcount;
   }
 
   public get pageNumbers(): number[] {
-    // return Array(Math.ceil(this.repository
-    //   .getLists(this.selectedCategory).length / this.listsPerPage))
-    //   .fill(0).map((x, i) => i + 1);
     return Array(this.pageCount)
       .fill(0).map((x, i) => i + 1);
   }
 
   public goToLogIn() {
-    // console.log("Trying go to " + "user/main");
     this.router.navigate(["user/main"]);
   }
 
   public setListToListManager(list: List) {
     this.listManager.setList(list);
     this.listManager.Saved = true;
-    // console.log("Trying go to " + "list-store/list-viewer");
     this.router.navigate(["list-store/list-viewer"]);
   }
 

@@ -21,6 +21,11 @@ export class MainPageComponent {
     return this.auth.authenticated;
   }
 
+  public get isAdmin(): boolean {
+    // console.log("Authenticated " + this.auth.authenticated);
+    return this.auth.isAdmin;
+  }
+
   public get linksToDisable(): string[] {
     return this.isAuthenticated ? [] : ["Your Lists"];
   }
