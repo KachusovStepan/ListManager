@@ -23,7 +23,6 @@ public class ItemList implements Comparable<ItemList> {
     @ManyToOne
     private Category category;
 
-//    @JsonManagedReference
     @OneToMany(cascade = CascadeType.ALL)
     @OrderBy("number ASC")
     private List<Item> items;

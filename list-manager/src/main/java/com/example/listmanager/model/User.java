@@ -18,13 +18,11 @@ public class User {
     private String username;
     private String email;
     private String password;
-//    @ManyToMany
-//    @JsonIgnore
+
     @ManyToMany(fetch = FetchType.LAZY)
     private List<Role> roles = new ArrayList<>();
 
     @OneToMany()
-//    @JsonIdentityReference(alwaysAsId = true)
     private List<ItemList> lists = new ArrayList<>();
 
     public User(String username, String email, String password) {

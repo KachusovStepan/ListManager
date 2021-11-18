@@ -211,8 +211,7 @@ public class UserController {
 //        userRepository.save(user);
         return ResponseEntity.ok().build();
     }
-
-
+  
     @PostMapping("user/lists")
     @Transactional
     ResponseEntity<ItemListItemVerboseToGetDto> saveUserList(Principal principal, @RequestBody ItemList toSave) {
@@ -340,33 +339,3 @@ public class UserController {
 //        return ResponseEntity.ok().body(itemListToGetDtos);
     }
 }
-
-
-//class ResponseSimpleInfo {
-//    String status;
-//    String message;
-//
-//    public ResponseSimpleInfo(String status, String message) {
-//        this.status = status;
-//        this.message = message;
-//    }
-//
-//    public ResponseSimpleInfo() {
-//    }
-//
-//    public String getStatus() {
-//        return status;
-//    }
-//
-//    public void setStatus(String status) {
-//        this.status = status;
-//    }
-//
-//    public String getMessage() {
-//        return message;
-//    }
-//
-//    public void setMessage(String message) {
-//        this.message = message;
-//    }
-//}

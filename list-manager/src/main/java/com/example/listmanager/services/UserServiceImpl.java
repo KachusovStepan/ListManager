@@ -68,11 +68,6 @@ public class UserServiceImpl implements IUserService, UserDetailsService {
     //а для добавления роли в базу данных достаточно только
     //обновить поле в объектной репрезентации user?
 
-
-    //Кажется, что angular забирает на себя слишком много серверной работы.
-    //Можно ли как-то использовать его только для фронта, чтобы не проникать в
-    //REST-api логику общения с сервером?
-
     @Override
     public User getUser(String username) {
         return userRepository.findByUsername(username);
