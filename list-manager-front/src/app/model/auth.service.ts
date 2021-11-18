@@ -24,7 +24,10 @@ export class AuthService {
 
   public get isAdmin(): boolean {
     // console.log(this.datasource.auth_token);
-    return this.datasource.user?.roles?.indexOf(3) != -1; // FIXME: check in another way
+    if (this.datasource.user && this.datasource.user.roles) {
+      return this.datasource.user.roles.indexOf(3) != -1;
+    }
+    return false; // FIXME: check in another way
   }
 
   public clear() {
