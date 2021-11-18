@@ -17,7 +17,6 @@ public class WebApplicationConfig extends WebMvcConfigurerAdapter {
         registry.addViewController("/notFound").setViewName("forward:/index.html");
     }
 
-
     @Bean
     public WebServerFactoryCustomizer<ConfigurableServletWebServerFactory> containerCustomizer() {
         return container -> {
@@ -25,5 +24,4 @@ public class WebApplicationConfig extends WebMvcConfigurerAdapter {
                     "/notFound"));
         };
     }
-
 }

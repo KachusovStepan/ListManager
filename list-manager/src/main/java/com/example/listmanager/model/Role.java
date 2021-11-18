@@ -3,10 +3,7 @@ package com.example.listmanager.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
 import java.util.List;
 
 @Entity
@@ -15,16 +12,9 @@ public class Role {
     @GeneratedValue
     private Long id;
 
+    @Column(unique = true)
     private String name;
     private String description;
-
-    public List<User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(List<User> users) {
-        this.users = users;
-    }
 
     @ManyToMany(mappedBy = "roles")
     @JsonIgnore
@@ -35,6 +25,14 @@ public class Role {
     public Role(String name, String description) {
         this.name = name;
         this.description = description;
+    }
+
+    public List<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<User> users) {
+        this.users = users;
     }
 
     public Long getId() {
