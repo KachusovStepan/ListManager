@@ -13,7 +13,6 @@ public class Item {
     private int number;
     private int priority = 1;
     private String description;
-//    @JsonManagedReference
     @ManyToOne
     private ItemStatus status;
 

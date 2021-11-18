@@ -209,74 +209,6 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-
-//    @GetMapping("user/lists")
-//    ResponseEntity<List<ItemList>> getUserLists(
-//            Principal principal,
-//            @RequestParam(value = "category", required = false) String category,
-//            @RequestParam(value = "sort", required = false) String sort
-//    ) {
-//        log.info("getUserLists");
-//        if (principal == null) {
-//            log.info("Principal == null");
-//            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-//        }
-//        String userName = principal.getName();
-//        User user = this.userService.getUser(userName);
-//        if (user == null) {
-//            log.info("user with name " + userName + " not found in db");
-//            return ResponseEntity.notFound().build();
-//        }
-//        log.info("Returning Ok with " + user.getLists().size() + " elements");
-//
-//        List<ItemList> resultLists = user.getLists();
-//        if (category != null && category.length() > 0) {
-//            Category requestedCategory = categoryRepository.findByName(category);
-//            if (requestedCategory == null) {
-//                ResponseEntity.ok().body(new ArrayList<>());
-//            }
-//            resultLists = resultLists.stream()
-//                    .filter(l -> l.getCategory().getId() == requestedCategory.getId())
-//                    .collect(Collectors.toList());
-//        }
-//        if (sort != null && sort.length() > 0) {
-//            boolean success = sortItemListsBy(resultLists, sort);
-//            if (!success) {
-//                return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
-//            }
-//        }
-//        return ResponseEntity.ok().body(resultLists);
-//    }
-//
-//    private boolean sortItemListsBy(List<ItemList> list, String sortParam) {
-//        String[] parts = sortParam.split(",");
-//        if (parts[0].equals("name")) {
-//            if (parts.length > 1 && parts[1] == "desc") {
-//                list.sort((l1, l2) -> -l1.getName().compareTo(l2.getName()));
-//            } else {
-//                list.sort(Comparator.comparing(ItemList::getName));
-//            }
-//            return true;
-//        }
-//        if (parts[0].equals("category")) {
-//            if (parts.length > 1 && parts[1].equals("desc")) {
-//                list.sort((l1, l2) -> -l1.getCategory().getName().compareTo(l2.getCategory().getName()));
-//            } else {
-//                list.sort(Comparator.comparing(l -> l.getCategory().getName()));
-//            }
-//            return true;
-//        }
-//        if (parts[0].equals("count")) {
-//            if (parts.length > 1 && parts[1].equals("desc")) {
-//                list.sort((l1, l2) -> -(l1.getItems().size() - l2.getItems().size()));
-//            } else {
-//                list.sort(Comparator.comparingInt(l -> l.getItems().size()));
-//            }
-//            return true;
-//        }
-//        return false;
-//    }
-
     @PostMapping("user/lists")
     @Transactional
     ResponseEntity<ItemListItemVerboseToGetDto> saveUserList(Principal principal, @RequestBody ItemList toSave) {
@@ -324,33 +256,3 @@ public class UserController {
         return users;
     }
 }
-
-
-//class ResponseSimpleInfo {
-//    String status;
-//    String message;
-//
-//    public ResponseSimpleInfo(String status, String message) {
-//        this.status = status;
-//        this.message = message;
-//    }
-//
-//    public ResponseSimpleInfo() {
-//    }
-//
-//    public String getStatus() {
-//        return status;
-//    }
-//
-//    public void setStatus(String status) {
-//        this.status = status;
-//    }
-//
-//    public String getMessage() {
-//        return message;
-//    }
-//
-//    public void setMessage(String message) {
-//        this.message = message;
-//    }
-//}

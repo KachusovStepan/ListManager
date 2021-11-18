@@ -8,9 +8,7 @@ import java.util.List;
 
 public interface IListService {
     ItemList saveList(ItemList list);
-//    ItemList trySaveItemList(ItemList list);
     void addListToUser(User user, ItemList list);
-//    void addListToUser(String username, ItemList list);
     Item saveItem(Item item);
     Category saveCategory(Category category);
     ItemStatus saveItemStatus(ItemStatus itemStatus);
