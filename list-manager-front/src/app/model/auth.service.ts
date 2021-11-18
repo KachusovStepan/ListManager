@@ -22,6 +22,11 @@ export class AuthService {
     return this.datasource.auth_token != null;
   }
 
+  public get isAdmin(): boolean {
+    // console.log(this.datasource.auth_token);
+    return this.datasource.user?.roles?.indexOf(3) != -1; // FIXME: check in another way
+  }
+
   public clear() {
     this.datasource.auth_token = null;
   }

@@ -48,6 +48,7 @@ public class UserController {
     private final CategoryRepository categoryRepository;
     private final ItemStatusRepository itemStatusRepository;
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
 
     private final ModelMapper mapper;
 
@@ -60,6 +61,7 @@ public class UserController {
             CategoryRepository categoryRepository,
             ItemStatusRepository itemStatusRepository,
             UserRepository userRepository,
+            RoleRepository roleRepository,
             ModelMapper mapper
     ) {
         this.userService = userService;
@@ -69,6 +71,7 @@ public class UserController {
         this.categoryRepository = categoryRepository;
         this.itemStatusRepository = itemStatusRepository;
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
 
         this.mapper = mapper;
     }
@@ -208,7 +211,7 @@ public class UserController {
 //        userRepository.save(user);
         return ResponseEntity.ok().build();
     }
-
+  
     @PostMapping("user/lists")
     @Transactional
     ResponseEntity<ItemListItemVerboseToGetDto> saveUserList(Principal principal, @RequestBody ItemList toSave) {
@@ -249,10 +252,90 @@ public class UserController {
         return ResponseEntity.ok().body(res);
     }
 
-    @GetMapping("/users")
-    List<User> getAllUsers() {
-        List<User> users = userService.getUsers();
-        log.info("getAllUsers Ok with " + users.size() + " elements");
-        return users;
+//    @GetMapping("/users")
+//    List<User> getAllUsers() {
+//        List<User> users = userService.getUsers();
+//        log.info("getAllUsers Ok with " + users.size() + " elements");
+//        return users;
+//    }
+
+    @GetMapping("users")
+    ResponseEntity<CustomPage<UserToGetDto>> getUserItemLists(
+            Principal principal,
+            @RequestParam(value = "sortBy", defaultValue="id", required = false) String sortBy,
+            @RequestParam(value = "pageIndex",  defaultValue="0",  required = false) int pageIndex,
+            @RequestParam(value = "pageSize",  defaultValue="8",  required = false) int pageSize,
+            @RequestParam(value = "roleId", defaultValue="", required = false) Long roleId
+    ) {
+        if (principal == null) {
+            log.info("Principal == null");
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        String userName = principal.getName();
+        User user = this.userService.getUser(userName);
+        if (user == null) {
+            log.info("user with name " + userName + " not found in db");
+            return ResponseEntity.notFound().build();
+        }
+        if (user.getRoles().stream().noneMatch(r -> r.getName().equals("ROLE_ADMIN"))) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        Sort sort = Sort.by(Sort.Direction.ASC, sortBy);
+
+        Page<User> users;
+        if (roleId != null) {
+            Role role = roleRepository.getById(roleId);
+            users = userRepository.getAllByRolesIsContaining(role, PageRequest.of(pageIndex, pageSize, sort));
+        } else {
+            users = userRepository.findAll(PageRequest.of(pageIndex, pageSize, sort));
+        }
+        int totalCount = (int) users.getTotalElements();
+        int totalPageCount = users.getTotalPages();
+        List<UserToGetDto> itemListToGetDtos = users.stream()
+                .map(il -> mapper.map(il, UserToGetDto.class)).collect(Collectors.toList());
+        CustomPage<UserToGetDto> p = new CustomPage<>(itemListToGetDtos, totalCount, totalPageCount, pageIndex, pageSize);
+        return ResponseEntity.ok().body(p);
+//        return ResponseEntity.ok().body(itemListToGetDtos);
+    }
+
+    @GetMapping("/users/{userId}/lists")
+    ResponseEntity<CustomPage<ItemListItemVerboseToGetDto>> getUserItemListsUsingUserId(
+            Principal principal,
+            @PathVariable Long userId,
+            @RequestParam(value = "sortBy", defaultValue="id", required = false) String sortBy,
+            @RequestParam(value = "pageIndex",  defaultValue="0",  required = false) int pageIndex,
+            @RequestParam(value = "pageSize",  defaultValue="8",  required = false) int pageSize,
+            @RequestParam(value = "name", defaultValue="", required = false) String name,
+            @RequestParam(value = "categoryName", defaultValue="", required = false) String categoryName
+    ) {
+        if (principal == null) {
+            log.info("Principal == null");
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        String userName = principal.getName();
+        User user = this.userService.getUser(userName);
+        if (user == null) {
+            log.info("user with name " + userName + " not found in db");
+            return ResponseEntity.notFound().build();
+        }
+        if (user.getRoles().stream().noneMatch(r -> r.getName().equals("ROLE_ADMIN"))) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        if (!sortBy.equals("category") && !sortBy.equals("name") && !sortBy.equals("id")) {
+            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+        User listOwner = userRepository.getById(userId);
+        if (listOwner == null) {
+            return ResponseEntity.notFound().build();
+        }
+        Sort sort = Sort.by(Sort.Direction.ASC, sortBy);
+        Page<ItemList> lists = itemListRepository.getAllByUserAndCategory_NameContainingAndNameContaining(listOwner, categoryName, name, PageRequest.of(pageIndex, pageSize, sort));
+        int totalCount = (int) lists.getTotalElements();
+        int totalPageCount = lists.getTotalPages();
+        List<ItemListItemVerboseToGetDto> itemListToGetDtos = lists.stream()
+                .map(il -> mapper.map(il, ItemListItemVerboseToGetDto.class)).collect(Collectors.toList());
+        CustomPage<ItemListItemVerboseToGetDto> p = new CustomPage<>(itemListToGetDtos, totalCount, totalPageCount, pageIndex, pageSize);
+        return ResponseEntity.ok().body(p);
+//        return ResponseEntity.ok().body(itemListToGetDtos);
     }
 }

@@ -77,4 +77,9 @@ public class UserServiceImpl implements IUserService, UserDetailsService {
     public List<User> getUsers() {
         return userRepository.findAll();
     }
+
+    @Override
+    public List<Role> getRoles() {
+        return roleRepository.findAll();
+    }
 }
