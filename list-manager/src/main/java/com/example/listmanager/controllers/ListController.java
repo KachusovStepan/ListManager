@@ -51,6 +51,13 @@ public class ListController {
         return ResponseEntity.ok().body(categories);
     }
 
+    @GetMapping("roles")
+    ResponseEntity<List<Role>> getRoles() {
+        List<Role> roles = userService.getRoles();
+        log.info("getRoles Ok with " + roles.size() + " elements");
+        return ResponseEntity.ok().body(roles);
+    }
+
     @GetMapping("/lists/{id}")
     ResponseEntity<ItemList> getOneList(@PathVariable Long id, Principal principal) {
         if (principal == null)

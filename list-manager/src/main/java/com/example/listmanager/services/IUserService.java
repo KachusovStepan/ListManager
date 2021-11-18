@@ -11,4 +11,5 @@ public interface IUserService {
     void addRoleToUser(String username, String roleName);
     User getUser(String username);
     List<User> getUsers();
+    List<Role> getRoles();
 }
