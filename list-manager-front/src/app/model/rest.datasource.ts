@@ -249,6 +249,12 @@ export class RestDataSource {
       if (this.refresh_token) {
         console.log(`refresh_token exp at: ${new Date(this.tokenExpiresTime(this.refresh_token))}`)
       }
+      // NEW:
+      if (this.auth_token) {
+        this.getUser().subscribe(user => {
+          this.user = user;
+        });
+      }
       return this.auth_token != null;
     })).pipe(catchError(err => from([false])));
   }
