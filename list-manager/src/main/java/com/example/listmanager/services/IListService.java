@@ -18,4 +18,5 @@ public interface IListService {
     List<Category> getListCategories();
     List<ItemStatus> getItemStatuses();
     List<ItemList> getItemLists();
+    boolean deleteList(Long id);
 }
