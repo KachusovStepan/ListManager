@@ -29,7 +29,7 @@ export class AdminComponent {
   public searchUserName: string = "";
   public selectedUser: IUser | null = null;
   public selectedRole: Role | null = null;
-  public selectedRoleId: number = 0;
+  public selectedRoleId: number | null = null;
 
   public selectedList: List | null = null;
 
@@ -73,8 +73,14 @@ export class AdminComponent {
     this.refreshUsers();
   }
 
-  public changeRole(role?: Role) {
-    this.selectedRole = role ?? null;
+  public changeRole(roleId: number | null) {
+    console.log(" > changeRole id");
+    console.log(roleId);
+    this.selectedRoleId = null;
+    if (roleId && !isNaN(parseInt(roleId.toString(), 10))) {
+      this.selectedRoleId = roleId;
+    }
+    // this.selectedRoleId = roleId ?? null;
     this.selectedUserPage = 1;
     this.refreshUsers();
   }
@@ -86,9 +92,16 @@ export class AdminComponent {
   }
 
   public refreshUsers() {
+    console.log(" > refresh users");
+    console.log("selectedRole: ");
+    console.log(this.selectedRoleId);
+    // console.log(this.selectedRole?.id);
+    console.log("id");
+    console.log(this.selectedUserPage - 1);
+    console.log(this.usersPerPage);
     this.requestingData = true;
     this.repository.requestUsers(
-        this.selectedRole?.id, "id",
+        this.selectedRoleId, "id",
         this.selectedUserPage - 1, this.usersPerPage)
       .subscribe(success => {
         this.requestingData = false;

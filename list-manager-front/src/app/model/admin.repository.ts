@@ -45,6 +45,7 @@ export class AdminRepository {
       this.roles = data[3];
 
       console.log(`Requesting init data`);
+      console.log(data);
       // this.requestLists().subscribe(
       //   succ => console.log(`requestsed: success: ${succ}`)
       // );

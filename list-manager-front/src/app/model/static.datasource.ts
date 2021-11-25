@@ -55,7 +55,13 @@ export class StaticDataSource {
     roles: [1, 2, 3],
     lists: this.lists.map(l => l.id ?? -1)//[this.lists[0]]
   };
-  public users: IUser[] = [this.user, this.user, this.user, this.user, this.user];
+  public users: IUser[] = [this.user, this.user, this.user, this.user, this.user,
+    { id: 2,
+      username: "Robert",
+      email: "r@r.com",
+      roles: [1],
+      lists: this.lists.map(l => l.id ?? -1)}
+  ];
 
   public getLists(): Observable<List[]> {
     return from([this.lists]);

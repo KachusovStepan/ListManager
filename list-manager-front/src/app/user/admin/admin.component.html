@@ -12,11 +12,11 @@
       <!-- BR: users -->
       <h4 class="p-2 text-center">Users:</h4>
       <div class="form-inline float-left mr-1 mt-auto">
-        <select  class="form-control" (change)="changeRole(($any($event.target)).value)" [(ngModel)]="selectedRole">
+        <select  class="form-control" (change)="changeRole(($any($event.target)).value)" [(ngModel)]="selectedRoleId">
           <option [value]="null">
             All
           </option>
-          <option *ngFor="let role of Roles" [value]="role">
+          <option *ngFor="let role of Roles" [value]="role.id">
             {{role.name}}
           </option>
       </select>
