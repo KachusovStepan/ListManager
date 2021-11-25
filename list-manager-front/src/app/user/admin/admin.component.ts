@@ -160,7 +160,7 @@ export class AdminComponent {
       return;
     }
     this.requestingData = true;
-    let categoryName = this.selectedCategory != "null" ? this.selectedCategory : "";
+    let categoryName = this.selectedCategoryName != "null" ? this.selectedCategoryName : "";
     // console.log(`Result category name: ${categoryName ?? undefined}`);
     this.repository.requestLists(
         this.selectedUser?.id, "", categoryName ?? undefined, "id",
@@ -184,6 +184,9 @@ export class AdminComponent {
         console.log(`deleteList: success: ${succ}`);
       });
     }
+
+    this.selectedListPage = 1;
+    this.refreshLists();
   }
 }
 
