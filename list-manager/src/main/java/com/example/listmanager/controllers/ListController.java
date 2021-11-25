@@ -60,12 +60,13 @@ public class ListController {
 
     @GetMapping("/lists/{id}")
     ResponseEntity<ItemList> getOneList(@PathVariable Long id, Principal principal) {
-        if (principal == null)
+        if (principal == null) {
             return ResponseEntity.notFound().build();
+        }
         var user = userService.getUser(principal.getName());
         // Будет ли СУБД вытаскивать листы из БД полностью или сравнит только id
-        if (!user.getRoles().stream().anyMatch(r -> r.getName().equals("ROLE_ADMIN"))
-            && !user.getLists().stream().anyMatch(l -> l.getId().equals(id)))
+        if (user.getRoles().stream().noneMatch(r -> r.getName().equals("ROLE_ADMIN"))
+            && user.getLists().stream().noneMatch(l -> l.getId().equals(id)))
             return ResponseEntity.notFound().build();
 
         Optional<ItemList> optionalItemList = itemListRepository.findById(id);
@@ -86,12 +87,20 @@ public class ListController {
     }
 
     @DeleteMapping("/lists/{id}")
-    ResponseEntity<?> deleteItemList(@PathVariable Long id) {
+    ResponseEntity<?> deleteItemList(@PathVariable Long id, Principal principal) {
+        if (principal == null) {
+            return ResponseEntity.notFound().build();
+        }
+        var user = userService.getUser(principal.getName());
+        if (user.getRoles().stream().noneMatch(r -> r.getName().equals("ROLE_ADMIN")))
+            return ResponseEntity.notFound().build();
         Optional<ItemList> optionalItemList = itemListRepository.findById(id);
         if (optionalItemList.isEmpty()) {
             log.info("deleteItemList Not Found with id: " + id);
             return ResponseEntity.notFound().build();
         }
+        User owner = optionalItemList.get().getUser();
+        owner.getLists().removeIf(l -> l.getId().equals(id));
         itemListRepository.deleteById(id);
         log.info("deleteItemList deleted with id: " + id);
         return ResponseEntity.ok().build();

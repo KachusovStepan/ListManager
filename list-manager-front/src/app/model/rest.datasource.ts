@@ -231,6 +231,19 @@ export class RestDataSource {
       .pipe(catchError(err => from([false])));
   }
 
+  public deleteListById(listId: number): Observable<boolean> {
+    let url = this.baseUrl + `api/lists/${listId}`;
+    if (this.refresh_token && this.tokenExpiresLessThan(this.refresh_token, 5)) {
+      return this.refreshTokens().pipe(flatMap(succ => {
+        if (succ) {
+          return this.http.delete<void>(url, this.getOptions()).pipe(map(res => true)).pipe(catchError(err => from([false])));
+        }
+        return from([false]);
+      }));
+    }
+    return this.http.delete<void>(url, this.getOptions()).pipe(map(res => true)).pipe(catchError(err => from([false])));
+  }
+
   public authenticate(user: string, pass: string): Observable<boolean> {
     return this.http.post<any>(this.baseUrl + "api/login", {
       username: user, password: pass

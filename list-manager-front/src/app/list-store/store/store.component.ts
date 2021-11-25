@@ -89,7 +89,7 @@ export class StoreComponent {
   }
 
   public deleteList(id: number) {
-    if (confirm("Do you really wabt to delete this list?")) {
+    if (confirm("Do you really want to delete this list?")) {
       this.repository.deleteList(id).subscribe(res => {
         if (res) {
           alert("List successfully deleted");

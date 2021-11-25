@@ -52,17 +52,36 @@
     </div>
     <!-- BR: users -->
 
-    <div class="col-5 bg-secondary p-2 h-100 d-flex flex-column pb-3">
 
-      <div *ngFor="let list of Lists" class="card m-1 p-1 bg-light" (click)="selectList(list)">
+
+    <div class="col-5 bg-secondary p-2 h-100 d-flex flex-column pb-3">
+      <h4 class="p-2 text-center bg-light">Categories:</h4>
+      <div class="form-inline float-left mr-1 mb-auto">
+        <select  class="form-control" (change)="changeCategory(($any($event.target)).value)" [(ngModel)]="selectedCategoryName">
+          <option [value]="null">
+            All
+          </option>
+          <option *ngFor="let category of Categories" [value]="category.name">
+            {{category.name}}
+          </option>
+      </select>
+      </div>
+
+      <div *ngFor="let list of Lists" class="card m-1 p-1 bg-light" (click)="selectList(list)"
+        [class.bg-dark]="list == selectedList" [class.text-white]="list == selectedList">
         <h4>
           {{list.name}}
           <span class="badge badge-pill badge-primary float-right text-warning" style="float: right">
             {{list.items?.length}}
           </span>
         </h4>
-        <div class="card-text bg-white p-1">
+        <div class="card-text p-1">
           Embedded list content will go here
+          <button class="btn btn-danger btn-sm float-right"
+              style="float: right"
+              (click)="deleteList(list)">
+            Delete
+          </button>
         </div>
       </div>
 

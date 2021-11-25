@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, ComponentFactoryResolver } from "@angular/core";
 import { Location } from "@angular/common";
 import { Router } from "@angular/router";
 import { AuthService } from "src/app/model/auth.service";
@@ -31,6 +31,8 @@ export class AdminComponent {
   public selectedRole: Role | null = null;
   public selectedRoleId: number | null = null;
 
+  public selectedCategoryName: string | null = null;
+
   public selectedList: List | null = null;
 
   public constructor(
@@ -58,6 +60,10 @@ export class AdminComponent {
     return this.repository.getRoles();
   }
 
+  public get Categories() {
+    return this.repository.getCategories();
+  }
+
   // BR: User
   public get Users() {
     return this.repository.getUsers();
@@ -74,13 +80,10 @@ export class AdminComponent {
   }
 
   public changeRole(roleId: number | null) {
-    console.log(" > changeRole id");
-    console.log(roleId);
     this.selectedRoleId = null;
     if (roleId && !isNaN(parseInt(roleId.toString(), 10))) {
       this.selectedRoleId = roleId;
     }
-    // this.selectedRoleId = roleId ?? null;
     this.selectedUserPage = 1;
     this.refreshUsers();
   }
@@ -143,13 +146,24 @@ export class AdminComponent {
       .fill(0).map((x, i) => i + 1);
   }
 
+
+  public changeCategory(categoryName: string) {
+    console.log(` > changeCategory: ${categoryName}`);
+    this.selectedCategoryName = categoryName;
+    this.selectedListPage = 1;
+    this.refreshLists();
+  }
+
+
   public refreshLists() {
     if (this.selectedUser === null) {
       return;
     }
     this.requestingData = true;
+    let categoryName = this.selectedCategory != "null" ? this.selectedCategory : "";
+    // console.log(`Result category name: ${categoryName ?? undefined}`);
     this.repository.requestLists(
-        this.selectedUser?.id, "", this.selectedCategory ?? undefined, "id",
+        this.selectedUser?.id, "", categoryName ?? undefined, "id",
         this.selectedListPage - 1, this.listsPerPage)
       .subscribe(success => {
         this.requestingData = false;
@@ -162,5 +176,14 @@ export class AdminComponent {
     this.selectedList = list;
   }
 
+  public deleteList(list: List) {
+    if (list.id && confirm("Do you really want to delete this list?")) {
+      this.requestingData = true;
+      this.repository.deleteListById(list.id).subscribe(succ => {
+        this.requestingData = false;
+        console.log(`deleteList: success: ${succ}`);
+      });
+    }
+  }
 }
 

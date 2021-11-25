@@ -133,4 +133,8 @@ export class StaticDataSource {
   public saveUsersList(list: List): Observable<boolean> {
     return from([true]).pipe(delay(1000));
   }
+
+  public deleteListById(listId: number): Observable<boolean> {
+    return from([true]).pipe(delay(1000));
+  }
 }

@@ -89,10 +89,10 @@ export class AdminRepository {
   public requestUsers(
     roleId: number | null = null, sortBy: string = "id",
     pageIndex: number = 0, pageSize: number = 4): Observable<boolean> {
-  if (this.user === null) {
-    console.log("$> requestUsers: user not set");
-    return from([false]);
-  }
+  // if (this.user === null) {
+  //   console.log("$> requestUsers: user not set");
+  //   return from([false]);
+  // }
   return this.dataSource.getUsersWithParams(roleId, sortBy, pageIndex, pageSize).pipe(
     map(page => {
       this.userTotalCount = page.totalCount;
@@ -147,8 +147,8 @@ export class AdminRepository {
   ));
   }
 
-  public deleteList(id: number): Observable<boolean> {
-      return this.dataSource.deleteUsersList(id).pipe(map(res => {
+  public deleteListById(id: number): Observable<boolean> {
+      return this.dataSource.deleteListById(id).pipe(map(res => {
         if (res) {
           this.lists = this.lists.filter(l => l.id != id);
         }
