@@ -14,6 +14,8 @@ import org.hibernate.annotations.NotFound;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.listmanager.model.*;
@@ -64,7 +66,6 @@ public class ListController {
             return ResponseEntity.notFound().build();
         }
         var user = userService.getUser(principal.getName());
-        // Будет ли СУБД вытаскивать листы из БД полностью или сравнит только id
         if (user.getRoles().stream().noneMatch(r -> r.getName().equals("ROLE_ADMIN"))
             && user.getLists().stream().noneMatch(l -> l.getId().equals(id)))
             return ResponseEntity.notFound().build();
@@ -88,12 +89,6 @@ public class ListController {
 
     @DeleteMapping("/lists/{id}")
     ResponseEntity<?> deleteItemList(@PathVariable Long id, Principal principal) {
-        if (principal == null) {
-            return ResponseEntity.notFound().build();
-        }
-        var user = userService.getUser(principal.getName());
-        if (user.getRoles().stream().noneMatch(r -> r.getName().equals("ROLE_ADMIN")))
-            return ResponseEntity.notFound().build();
         boolean success = listService.deleteList(id);
         if (!success) {
             log.info("deleteItemList Not Found with id: " + id);
