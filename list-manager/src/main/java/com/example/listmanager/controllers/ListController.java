@@ -94,14 +94,11 @@ public class ListController {
         var user = userService.getUser(principal.getName());
         if (user.getRoles().stream().noneMatch(r -> r.getName().equals("ROLE_ADMIN")))
             return ResponseEntity.notFound().build();
-        Optional<ItemList> optionalItemList = itemListRepository.findById(id);
-        if (optionalItemList.isEmpty()) {
+        boolean success = listService.deleteList(id);
+        if (!success) {
             log.info("deleteItemList Not Found with id: " + id);
             return ResponseEntity.notFound().build();
         }
-        User owner = optionalItemList.get().getUser();
-        owner.getLists().removeIf(l -> l.getId().equals(id));
-        itemListRepository.deleteById(id);
         log.info("deleteItemList deleted with id: " + id);
         return ResponseEntity.ok().build();
     }
