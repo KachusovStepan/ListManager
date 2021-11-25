@@ -64,8 +64,8 @@ public class ListController {
             return ResponseEntity.notFound().build();
         var user = userService.getUser(principal.getName());
         // Будет ли СУБД вытаскивать листы из БД полностью или сравнит только id
-        if (!user.getRoles().stream().anyMatch(r -> r.getName().equals("ROLE_ADMIN"))
-            && !user.getLists().stream().anyMatch(l -> l.getId().equals(id)))
+        if (user.getRoles().stream().noneMatch(r -> r.getName().equals("ROLE_ADMIN"))
+            && user.getLists().stream().noneMatch(l -> l.getId().equals(id)))
             return ResponseEntity.notFound().build();
 
         Optional<ItemList> optionalItemList = itemListRepository.findById(id);

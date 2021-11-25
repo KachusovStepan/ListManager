@@ -77,7 +77,7 @@ public class UserController {
     }
 
     //если principal == null (потому что нет или не корректный для объектного представления) это UNAUTHORIZED или BADREQUEST?
-    //если principal есть, но по имени не найден пользователь в БД, то это NotFOUND или UNOUTHORIZED или что?
+    //если principal есть, но по имени не найден пользователь в БД, то это NotFOUND или UNAUTHORIZED или что?
     //и вообще возможно ли второе без первого?
     @GetMapping("user")
     ResponseEntity<UserToGetDto> getCurrentUser(Principal principal) {
