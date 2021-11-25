@@ -7,6 +7,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.listmanager.model.*;
 import com.example.listmanager.model.dto.ItemListItemVerboseToGetDto;
 import com.example.listmanager.model.dto.UserToGetDto;
+import com.example.listmanager.model.dto.UserToPostDto;
 import com.example.listmanager.repos.*;
 import com.example.listmanager.services.IListService;
 import com.example.listmanager.services.IUserService;
@@ -100,12 +101,14 @@ public class UserController {
 
     //корректен ли путь семантически в соответствии с rest?
     @PostMapping("register")
-    ResponseEntity<UserToGetDto> registerUser(@RequestBody User user) {
-        log.info("registerUser name: " + user.getUsername() + " pass: " + user.getPassword());
-        if (userRepository.existsByUsername(user.getUsername())) {
+    ResponseEntity<UserToGetDto> registerUser(@RequestBody UserToPostDto userToPostDto) {
+        log.info("registerUser name: " + userToPostDto.getUsername() + " pass: " + userToPostDto.getPassword());
+        if (userRepository.existsByUsername(userToPostDto.getUsername())) {
             log.info("User with this name already exists");
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
+
+        User user = mapper.map(userToPostDto, User.class);
 
         User savedUser = this.userService.saveUser(user);
         userService.addRoleToUser(savedUser.getUsername(), "ROLE_USER");

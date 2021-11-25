@@ -22,7 +22,7 @@ public class User {
     @ManyToMany(fetch = FetchType.LAZY)
     private List<Role> roles = new ArrayList<>();
 
-    @OneToMany()
+    @OneToMany(cascade = CascadeType.REFRESH)
     private List<ItemList> lists = new ArrayList<>();
 
     public User(String username, String email, String password) {

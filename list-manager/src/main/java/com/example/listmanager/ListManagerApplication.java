@@ -4,6 +4,7 @@ import com.example.listmanager.model.*;
 import com.example.listmanager.model.dto.ItemListItemVerboseToGetDto;
 import com.example.listmanager.model.dto.ItemListToGetDto;
 import com.example.listmanager.model.dto.UserToGetDto;
+import com.example.listmanager.model.dto.UserToPostDto;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
@@ -145,7 +146,6 @@ public class ListManagerApplication {
 				using(new UserToIdConverter()).map(source.getUser()).setUser(null);
 			}
 		});
-
 
 		return modelMapper;
 	}
