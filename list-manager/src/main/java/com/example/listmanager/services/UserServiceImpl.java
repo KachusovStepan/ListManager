@@ -64,10 +64,6 @@ public class UserServiceImpl implements IUserService, UserDetailsService {
         user.getRoles().add(role); // not explicitly saving because transactional
     }
 
-    //Спросить на практике: Почему у user нужно вызывать save явно,
-    //а для добавления роли в базу данных достаточно только
-    //обновить поле в объектной репрезентации user?
-
     @Override
     public User getUser(String username) {
         return userRepository.findByUsername(username);
@@ -81,5 +77,12 @@ public class UserServiceImpl implements IUserService, UserDetailsService {
     @Override
     public List<Role> getRoles() {
         return roleRepository.findAll();
+    }
+
+    @Override
+    public User saveUserWithRole(User user, String roleName) {
+        User savedUser = this.saveUser(user);
+        this.addRoleToUser(savedUser.getUsername(), roleName);
+        return savedUser;
     }
 }

@@ -38,7 +38,7 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 
-@RequestMapping("/api")
+@RequestMapping("/api/user")
 @RestController
 @Transactional
 public class UserController {
@@ -77,16 +77,9 @@ public class UserController {
         this.mapper = mapper;
     }
 
-    //если principal == null (потому что нет или не корректный для объектного представления) это UNAUTHORIZED или BADREQUEST?
-    //если principal есть, но по имени не найден пользователь в БД, то это NotFOUND или UNAUTHORIZED или что?
-    //и вообще возможно ли второе без первого?
-    @GetMapping("user")
+    @GetMapping
     ResponseEntity<UserToGetDto> getCurrentUser(Principal principal) {
         log.info("getCurrentUser");
-        if (principal == null) {
-            log.info("Principal == null");
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
         String userName = principal.getName();
         log.info("Principal.Name == " + userName);
         User user = userService.getUser(userName);
@@ -99,59 +92,7 @@ public class UserController {
         return ResponseEntity.ok().body(userToGetDto);
     }
 
-    //корректен ли путь семантически в соответствии с rest?
-    @PostMapping("register")
-    ResponseEntity<UserToGetDto> registerUser(@RequestBody UserToPostDto userToPostDto) {
-        log.info("registerUser name: " + userToPostDto.getUsername() + " pass: " + userToPostDto.getPassword());
-        if (userRepository.existsByUsername(userToPostDto.getUsername())) {
-            log.info("User with this name already exists");
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        }
-
-        User user = mapper.map(userToPostDto, User.class);
-
-        User savedUser = this.userService.saveUser(user);
-        userService.addRoleToUser(savedUser.getUsername(), "ROLE_USER");
-        UserToGetDto userToGetDto = mapper.map(savedUser, UserToGetDto.class);
-        return ResponseEntity.ok().body(userToGetDto);
-    }
-
-    @GetMapping("token/refresh")
-    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String authorizationHeader = request.getHeader(AUTHORIZATION);
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            try {
-                String refresh_token = authorizationHeader.substring("Bearer ".length());
-                Algorithm algorithm = Algorithm.HMAC256("secret".getBytes(StandardCharsets.UTF_8));
-                JWTVerifier verifier = JWT.require(algorithm).build();
-                DecodedJWT decodedJWT = verifier.verify(refresh_token);
-                String username = decodedJWT.getSubject();
-                User user = userService.getUser(username);
-                String access_token = JWT.create()
-                        .withSubject(user.getUsername())
-                        .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000))
-                        .withIssuer(request.getRequestURL().toString())
-                        .withClaim("roles", user.getRoles().stream().map(Role::getName).collect(Collectors.toList()))
-                        .sign(algorithm);
-                Map<String, String> tokens = new HashMap<>();
-                tokens.put("access_token", access_token);
-                tokens.put("refresh_token", refresh_token);
-                response.setContentType(MimeTypeUtils.APPLICATION_JSON_VALUE);
-                new ObjectMapper().writeValue(response.getOutputStream(), tokens);
-            } catch (Exception exception) {
-                response.setHeader("error", exception.getMessage());
-                response.setStatus(FORBIDDEN.value());
-                Map<String, String> error = new HashMap<>();
-                error.put("error_message", exception.getMessage());
-                response.setContentType(APPLICATION_JSON_VALUE);
-                new ObjectMapper().writeValue(response.getOutputStream(), error);
-            }
-        } else {
-            throw new RuntimeException("Refresh token is missing");
-        }
-    }
-
-    @GetMapping("user/lists")
+    @GetMapping("lists")
     ResponseEntity<CustomPage<ItemListItemVerboseToGetDto>> getUserItemLists(
             Principal principal,
             @RequestParam(value = "sortBy", defaultValue="id", required = false) String sortBy,
@@ -160,12 +101,8 @@ public class UserController {
             @RequestParam(value = "name", defaultValue="", required = false) String name,
             @RequestParam(value = "categoryName", defaultValue="", required = false) String categoryName
     ) {
-        if (principal == null) {
-            log.info("Principal == null");
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
         String userName = principal.getName();
-        User user = this.userService.getUser(userName);
+        User user = userService.getUser(userName);
         if (user == null) {
             log.info("user with name " + userName + " not found in db");
             return ResponseEntity.notFound().build();
@@ -185,8 +122,8 @@ public class UserController {
 //        return ResponseEntity.ok().body(itemListToGetDtos);
     }
 
-    @DeleteMapping("user/lists/{itemListId}")
-    ResponseEntity deleteUserItemList(
+    @DeleteMapping("lists/{itemListId}")
+    ResponseEntity<?> deleteUserItemList(
             @PathVariable Long itemListId,
             Principal principal
 
@@ -210,12 +147,10 @@ public class UserController {
         }
         user.getLists().removeIf(l -> l.getId().equals(itemListId));
         itemListRepository.delete(ilToDelete);
-//        user.getLists().removeIf(l -> l.getId() == itemListId);
-//        userRepository.save(user);
         return ResponseEntity.ok().build();
     }
   
-    @PostMapping("user/lists")
+    @PostMapping("lists")
     @Transactional
     ResponseEntity<ItemListItemVerboseToGetDto> saveUserList(Principal principal, @RequestBody ItemList toSave) {
         if (principal == null) {
@@ -253,92 +188,5 @@ public class UserController {
         userRepository.save(user);
         ItemListItemVerboseToGetDto res = mapper.map(toSave, ItemListItemVerboseToGetDto.class);
         return ResponseEntity.ok().body(res);
-    }
-
-//    @GetMapping("/users")
-//    List<User> getAllUsers() {
-//        List<User> users = userService.getUsers();
-//        log.info("getAllUsers Ok with " + users.size() + " elements");
-//        return users;
-//    }
-
-    @GetMapping("users")
-    ResponseEntity<CustomPage<UserToGetDto>> getUserItemLists(
-            Principal principal,
-            @RequestParam(value = "sortBy", defaultValue="id", required = false) String sortBy,
-            @RequestParam(value = "pageIndex",  defaultValue="0",  required = false) int pageIndex,
-            @RequestParam(value = "pageSize",  defaultValue="8",  required = false) int pageSize,
-            @RequestParam(value = "roleId", defaultValue="", required = false) Long roleId
-    ) {
-        if (principal == null) {
-            log.info("Principal == null");
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-        String userName = principal.getName();
-        User user = this.userService.getUser(userName);
-        if (user == null) {
-            log.info("user with name " + userName + " not found in db");
-            return ResponseEntity.notFound().build();
-        }
-        if (user.getRoles().stream().noneMatch(r -> r.getName().equals("ROLE_ADMIN"))) {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-        Sort sort = Sort.by(Sort.Direction.ASC, sortBy);
-
-        Page<User> users;
-        if (roleId != null) {
-            Role role = roleRepository.getById(roleId);
-            users = userRepository.getAllByRolesIsContaining(role, PageRequest.of(pageIndex, pageSize, sort));
-        } else {
-            users = userRepository.findAll(PageRequest.of(pageIndex, pageSize, sort));
-        }
-        int totalCount = (int) users.getTotalElements();
-        int totalPageCount = users.getTotalPages();
-        List<UserToGetDto> itemListToGetDtos = users.stream()
-                .map(il -> mapper.map(il, UserToGetDto.class)).collect(Collectors.toList());
-        CustomPage<UserToGetDto> p = new CustomPage<>(itemListToGetDtos, totalCount, totalPageCount, pageIndex, pageSize);
-        return ResponseEntity.ok().body(p);
-//        return ResponseEntity.ok().body(itemListToGetDtos);
-    }
-
-    @GetMapping("/users/{userId}/lists")
-    ResponseEntity<CustomPage<ItemListItemVerboseToGetDto>> getUserItemListsUsingUserId(
-            Principal principal,
-            @PathVariable Long userId,
-            @RequestParam(value = "sortBy", defaultValue="id", required = false) String sortBy,
-            @RequestParam(value = "pageIndex",  defaultValue="0",  required = false) int pageIndex,
-            @RequestParam(value = "pageSize",  defaultValue="8",  required = false) int pageSize,
-            @RequestParam(value = "name", defaultValue="", required = false) String name,
-            @RequestParam(value = "categoryName", defaultValue="", required = false) String categoryName
-    ) {
-        if (principal == null) {
-            log.info("Principal == null");
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-        String userName = principal.getName();
-        User user = this.userService.getUser(userName);
-        if (user == null) {
-            log.info("user with name " + userName + " not found in db");
-            return ResponseEntity.notFound().build();
-        }
-        if (user.getRoles().stream().noneMatch(r -> r.getName().equals("ROLE_ADMIN"))) {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-        if (!sortBy.equals("category") && !sortBy.equals("name") && !sortBy.equals("id")) {
-            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
-        }
-        User listOwner = userRepository.getById(userId);
-        if (listOwner == null) {
-            return ResponseEntity.notFound().build();
-        }
-        Sort sort = Sort.by(Sort.Direction.ASC, sortBy);
-        Page<ItemList> lists = itemListRepository.getAllByUserAndCategory_NameContainingAndNameContaining(listOwner, categoryName, name, PageRequest.of(pageIndex, pageSize, sort));
-        int totalCount = (int) lists.getTotalElements();
-        int totalPageCount = lists.getTotalPages();
-        List<ItemListItemVerboseToGetDto> itemListToGetDtos = lists.stream()
-                .map(il -> mapper.map(il, ItemListItemVerboseToGetDto.class)).collect(Collectors.toList());
-        CustomPage<ItemListItemVerboseToGetDto> p = new CustomPage<>(itemListToGetDtos, totalCount, totalPageCount, pageIndex, pageSize);
-        return ResponseEntity.ok().body(p);
-//        return ResponseEntity.ok().body(itemListToGetDtos);
     }
 }

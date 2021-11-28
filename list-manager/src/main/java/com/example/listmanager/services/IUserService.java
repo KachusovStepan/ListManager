@@ -12,4 +12,5 @@ public interface IUserService {
     User getUser(String username);
     List<User> getUsers();
     List<Role> getRoles();
+    User saveUserWithRole(User user, String roleName);
 }
