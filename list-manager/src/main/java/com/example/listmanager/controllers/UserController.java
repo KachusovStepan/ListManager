@@ -77,16 +77,9 @@ public class UserController {
         this.mapper = mapper;
     }
 
-    //если principal == null (потому что нет или не корректный для объектного представления) это UNAUTHORIZED или BADREQUEST?
-    //если principal есть, но по имени не найден пользователь в БД, то это NotFOUND или UNAUTHORIZED или что?
-    //и вообще возможно ли второе без первого?
     @GetMapping
     ResponseEntity<UserToGetDto> getCurrentUser(Principal principal) {
         log.info("getCurrentUser");
-        if (principal == null) {
-            log.info("Principal == null");
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
         String userName = principal.getName();
         log.info("Principal.Name == " + userName);
         User user = userService.getUser(userName);
@@ -108,12 +101,8 @@ public class UserController {
             @RequestParam(value = "name", defaultValue="", required = false) String name,
             @RequestParam(value = "categoryName", defaultValue="", required = false) String categoryName
     ) {
-        if (principal == null) {
-            log.info("Principal == null");
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
         String userName = principal.getName();
-        User user = this.userService.getUser(userName);
+        User user = userService.getUser(userName);
         if (user == null) {
             log.info("user with name " + userName + " not found in db");
             return ResponseEntity.notFound().build();

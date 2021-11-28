@@ -34,7 +34,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-@RequestMapping
+@RequestMapping("/api")
 @RestController
 @Transactional
 public class AuthController {
@@ -68,13 +68,12 @@ public class AuthController {
 
         User user = mapper.map(userToPostDto, User.class);
 
-        User savedUser = this.userService.saveUser(user);
-        userService.addRoleToUser(savedUser.getUsername(), "ROLE_USER");
+        User savedUser = userService.saveUserWithRole(user, "ROLE_USER");
         UserToGetDto userToGetDto = mapper.map(savedUser, UserToGetDto.class);
         return ResponseEntity.ok().body(userToGetDto);
     }
 
-    @GetMapping("token/refresh")
+    @GetMapping("api/token/refresh")
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String authorizationHeader = request.getHeader(AUTHORIZATION);
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {

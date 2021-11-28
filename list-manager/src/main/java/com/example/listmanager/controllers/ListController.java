@@ -62,14 +62,6 @@ public class ListController {
 
     @GetMapping("/lists/{id}")
     ResponseEntity<ItemList> getOneList(@PathVariable Long id, Principal principal) {
-        if (principal == null) {
-            return ResponseEntity.notFound().build();
-        }
-        var user = userService.getUser(principal.getName());
-        if (user.getRoles().stream().noneMatch(r -> r.getName().equals("ROLE_ADMIN"))
-            && user.getLists().stream().noneMatch(l -> l.getId().equals(id)))
-            return ResponseEntity.notFound().build();
-
         Optional<ItemList> optionalItemList = itemListRepository.findById(id);
         if (optionalItemList.isPresent()) {
             log.info("getOneList Ok found with id: " + id);
@@ -97,14 +89,4 @@ public class ListController {
         log.info("deleteItemList deleted with id: " + id);
         return ResponseEntity.ok().build();
     }
-
-//    @GetMapping("/users/{userId}/lists")
-//    ResponseEntity<List<ItemList>> getUserLists(@PathVariable Long userId) {
-//        User user = userRepository.getById(userId);
-//        if (user == null) {
-//            return ResponseEntity.notFound().build();
-//        }
-//        List<ItemList> userLists = user.getLists();
-//        return ResponseEntity.ok().body(userLists);
-//    }
 }
