@@ -66,32 +66,17 @@ export class RestDataSource {
   }
 
   public getLists(): Observable<List[]> {
-    if (this.refresh_token && this.tokenExpiresLessThan(this.refresh_token, 5)) {
-      return this.refreshTokens().pipe(flatMap(succ => {
-        console.log(`got token: ${succ}`); // TODO: Delete this
-        if (succ) {
-          return this.http.get<List[]>( this.baseUrl + "api/user/lists", this.getOptions());
-        }
-        throw Error("unable to refresh token");
-      }));
-    }
-    return this.http.get<List[]>(
-      this.baseUrl + "api/user/lists", this.getOptions());
+    let url = this.baseUrl + "api/user/lists";
+    return this.refreshTokenIfNeeded().pipe(flatMap(succ => {
+      return this.http.get<List[]>(url, this.getOptions());
+    }));
   }
 
   public getListsWithParams(listName: string = "", categoryName: string = "", sortBy: string = "id", pageIndex: number = 0, pageSize: number = 8): Observable<CustomPage<ListToGetDto>> {
-    if (this.refresh_token && this.tokenExpiresLessThan(this.refresh_token!, 5)) {
-      return this.refreshTokens().pipe(flatMap(succ => {
-        console.log(`got token: ${succ}`); // TODO: Delete this
-        if (succ) {
-          return this.http.get<CustomPage<ListToGetDto>>(
-            this.baseUrl + `api/user/lists?name=${listName}&categoryName=${categoryName}&sortBy=${sortBy}&pageIndex=${pageIndex}&pageSize=${pageSize}`, this.getOptions());
-        }
-        throw Error("unable to refresh token");
-      }));
-    }
-    return this.http.get<CustomPage<ListToGetDto>>(
-      this.baseUrl + `api/user/lists?name=${listName}&categoryName=${categoryName}&sortBy=${sortBy}&pageIndex=${pageIndex}&pageSize=${pageSize}`, this.getOptions());
+    let url = this.baseUrl + `api/user/lists?name=${listName}&categoryName=${categoryName}&sortBy=${sortBy}&pageIndex=${pageIndex}&pageSize=${pageSize}`;
+    return this.refreshTokenIfNeeded().pipe(flatMap(succ => {
+      return this.http.get<CustomPage<ListToGetDto>>(url, this.getOptions());
+    }));
   }
 
   public getUsersWithParams(roleId: number | null = null, sortBy: string = "id", pageIndex: number = 0, pageSize: number = 8): Observable<CustomPage<IUser>> {
@@ -101,147 +86,78 @@ export class RestDataSource {
     }
     url +=`sortBy=${sortBy}&pageIndex=${pageIndex}&pageSize=${pageSize}`;
 
-    if (this.refresh_token && this.tokenExpiresLessThan(this.refresh_token!, 5)) {
-      return this.refreshTokens().pipe(flatMap(succ => {
-        console.log(`got token: ${succ}`); // TODO: Delete this
-        if (succ) {
-          return this.http.get<CustomPage<IUser>>(url, this.getOptions());
-        }
-        throw Error("unable to refresh token");
-      }));
-    }
-    return this.http.get<CustomPage<IUser>>(url, this.getOptions());
+    return this.refreshTokenIfNeeded().pipe(flatMap(succ => {
+      return this.http.get<CustomPage<IUser>>(url, this.getOptions());
+    }));
   }
 
   public getListsWithParamsUsingUserId(userId: number, listName: string = "", categoryName: string = "", sortBy: string = "id",
       pageIndex: number = 0, pageSize: number = 4): Observable<CustomPage<ListToGetDto>> {
     let url = this.baseUrl + `api/users/${userId}/lists?name=${listName}&categoryName=${categoryName}&sortBy=${sortBy}&pageIndex=${pageIndex}&pageSize=${pageSize}`
-    if (this.refresh_token && this.tokenExpiresLessThan(this.refresh_token!, 5)) {
-      return this.refreshTokens().pipe(flatMap(succ => {
-        if (succ) {
-          return this.http.get<CustomPage<ListToGetDto>>(url, this.getOptions());
-        }
-        throw Error("unable to refresh token");
-      }));
-    }
-    return this.http.get<CustomPage<ListToGetDto>>(url, this.getOptions());
+    return this.refreshTokenIfNeeded().pipe(flatMap(succ => {
+      return this.http.get<CustomPage<ListToGetDto>>(url, this.getOptions());
+    }));
   }
 
   public getItemStatus(): Observable<ItemStatus[]> {
-    if (this.refresh_token && this.tokenExpiresLessThan(this.refresh_token, 5)) {
-      return this.refreshTokens().pipe(flatMap(succ => {
-        console.log(`got token: ${succ}`); // TODO: Delete this
-        if (succ) {
-          return this.http.get<ItemStatus[]>(
-            this.baseUrl + "api/itemstatuses", this.getOptions());
-        }
-        throw Error("unable to refresh token");
-      }));
-    }
-    return this.http.get<ItemStatus[]>(
-      this.baseUrl + "api/itemstatuses", this.getOptions());
+    let url = this.baseUrl + "api/itemstatuses";
+    return this.refreshTokenIfNeeded().pipe(flatMap(succ => {
+      return this.http.get<ItemStatus[]>(url, this.getOptions());
+    }));
   }
 
   public getCategories(): Observable<Category[]> {
-    if (this.refresh_token && this.tokenExpiresLessThan(this.refresh_token, 5)) {
-      return this.refreshTokens().pipe(flatMap(succ => {
-        if (succ) {
-          return this.http.get<Category[]>(
-            this.baseUrl + "api/categories", this.getOptions());
-        }
-        throw Error("unable to refresh token");
-      }));
-    }
-    return this.http.get<Category[]>(
-      this.baseUrl + "api/categories", this.getOptions());
+    let url = this.baseUrl + "api/categories";
+    return this.refreshTokenIfNeeded().pipe(flatMap(succ => {
+      return this.http.get<Category[]>(url, this.getOptions());
+    }));
   }
 
   public getRoles(): Observable<Role[]> {
-    if (this.refresh_token && this.tokenExpiresLessThan(this.refresh_token, 5)) {
-      return this.refreshTokens().pipe(flatMap(succ => {
-        if (succ) {
-          return this.http.get<Role[]>(
-            this.baseUrl + "api/roles", this.getOptions());
-        }
-        throw Error("unable to refresh token");
-      }));
-    }
-    return this.http.get<Role[]>(
-      this.baseUrl + "api/roles", this.getOptions());
+    let url = this.baseUrl + "api/roles";
+    return this.refreshTokenIfNeeded().pipe(flatMap(succ => {
+      return this.http.get<Role[]>(url, this.getOptions());
+    }));
   }
 
   public getUser(): Observable<IUser> {
-    if (this.refresh_token && this.tokenExpiresLessThan(this.refresh_token, 5)) {
-      return this.refreshTokens().pipe(flatMap(succ => {
-        console.log(`got token: ${succ}`); // TODO: Delete this
-        if (succ) {
-          return this.http.get<IUser>(
-            this.baseUrl + "api/user", this.getOptions());
-        }
-        throw Error("unable to refresh token");
-      }));
-    }
-    return this.http.get<IUser>(
-      this.baseUrl + "api/user", this.getOptions());
+    let url = this.baseUrl + "api/user";
+    return this.refreshTokenIfNeeded().pipe(flatMap(succ => {
+      return this.http.get<IUser>(
+        url, this.getOptions());
+    }));
   }
 
   public saveUsersList(list: List): Observable<List | null> {
     console.log("REST DATASOURCE: saving list");
-    if (this.refresh_token && this.tokenExpiresLessThan(this.refresh_token, 5)) {
-      return this.refreshTokens().pipe(flatMap(succ => {
-        console.log(`got token: ${succ}`); // TODO: Delete this
-        if (succ) {
-          return this.http.post<List>(this.baseUrl + "api/user/lists", list,
-            this.getOptions())
-            .pipe(map(response => {
-              console.log("REST DATASOURCE: response");
-              console.log(response);
-              return response;
-            }));
-        }
-        throw Error("unable to refresh token");
-      }));
-    }
-
-
-    return this.http.post<List>(this.baseUrl + "api/user/lists", list,
-      this.getOptions())
-      .pipe(map(response => {
-        console.log("REST DATASOURCE: response");
-        console.log(response);
-        return response;
-      }));
+    let url = this.baseUrl + "api/user/lists";
+    return this.refreshTokenIfNeeded().pipe(flatMap(succ => {
+      return this.http.post<List>(url, list, this.getOptions())
+        .pipe(map(response => {
+          console.log("REST DATASOURCE: response");
+          console.log(response);
+          return response;
+        }));
+    }));
   }
 
   public deleteUsersList(id: number): Observable<boolean> {
-    console.log("REST DATASOURCE: deleting list");
-    if (this.refresh_token && this.tokenExpiresLessThan(this.refresh_token, 5)) {
-      return this.refreshTokens().pipe(flatMap(succ => {
-        console.log(`got token: ${succ}`); // TODO: Delete this
-        if (succ) {
-          return this.http.delete<void>(this.baseUrl + `api/user/lists/${id}`, this.getOptions()).pipe(map(res => true))
-            .pipe(catchError(err => from([false])));
-        }
-        return from([false]);
-      }));
-    }
-
-
-    return this.http.delete<void>(this.baseUrl + `api/user/lists/${id}`, this.getOptions()).pipe(map(res => true))
+    let url = this.baseUrl + `api/user/lists/${id}`;
+    return this.refreshTokenIfNeeded().pipe(flatMap(succ => {
+      return this.http.delete<void>(url, this.getOptions())
+      .pipe(map(res => true))
       .pipe(catchError(err => from([false])));
+    }));
   }
+
 
   public deleteListById(listId: number): Observable<boolean> {
     let url = this.baseUrl + `api/lists/${listId}`;
-    if (this.refresh_token && this.tokenExpiresLessThan(this.refresh_token, 5)) {
-      return this.refreshTokens().pipe(flatMap(succ => {
-        if (succ) {
-          return this.http.delete<void>(url, this.getOptions()).pipe(map(res => true)).pipe(catchError(err => from([false])));
-        }
-        return from([false]);
-      }));
-    }
-    return this.http.delete<void>(url, this.getOptions()).pipe(map(res => true)).pipe(catchError(err => from([false])));
+    return this.refreshTokenIfNeeded().pipe(flatMap(succ => {
+      return this.http.delete<void>(url, this.getOptions())
+      .pipe(map(res => true))
+      .pipe(catchError(err => from([false])));
+    }));
   }
 
   public authenticate(user: string, pass: string): Observable<boolean> {
@@ -290,6 +206,12 @@ export class RestDataSource {
   }
 
 
+  private refreshTokenIfNeeded() {
+    if (this.refresh_token && this.tokenExpiresLessThan(this.refresh_token, 5)) {
+      return this.refreshTokens();
+    }
+    return from([true]);
+  }
 
   private getOptions() {
     return {
