@@ -207,7 +207,7 @@ export class RestDataSource {
 
 
   private refreshTokenIfNeeded() {
-    if (this.refresh_token && this.tokenExpiresLessThan(this.refresh_token, 5)) {
+    if (this.refresh_token && this.auth_token && this.tokenExpiresLessThan(this.auth_token, 55)) {
       return this.refreshTokens();
     }
     return from([true]);
