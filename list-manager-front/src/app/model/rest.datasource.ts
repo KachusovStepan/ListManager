@@ -5,7 +5,7 @@ import { List, ListToGetDto } from "./list.model";
 import { map, catchError } from "rxjs/operators";
 import { HttpHeaders } from "@angular/common/http";
 import { ItemStatus } from "./itemstatus.model";
-import { IUser } from "./user";
+import { IPostUser, IUser } from "./user";
 import { Category } from "./category.model";
 import { CustomPage } from "./customPage.model";
 import { flatMap } from "rxjs/internal/operators";
@@ -125,6 +125,20 @@ export class RestDataSource {
     return this.refreshTokenIfNeeded().pipe(flatMap(succ => {
       return this.http.get<IUser>(
         url, this.getOptions());
+    }));
+  }
+
+  public updateUser(user: IPostUser): Observable<IUser | null>  {
+    console.log("REST DATASOURCE: saving user");
+    let url = this.baseUrl + "api/user/user";
+    return this.refreshTokenIfNeeded().pipe(flatMap(succ => {
+      return this.http.post<IUser>(url, user, this.getOptions())
+        .pipe(map(response => {
+          console.log("REST DATASOURCE: response");
+          console.log(response);
+          this.user = response;
+          return response;
+        }));
     }));
   }
 

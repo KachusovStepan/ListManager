@@ -1,0 +1,44 @@
+<!-- <div class="container-fluid">
+  <div class="row">
+    <div class="col bg-dark text-white">
+      <a class="navbar-brand">LIST MANAGER</a>
+    </div>
+  </div>
+</div> -->
+
+<!-- <h4 class="bg-success">Place Holder</h4> -->
+
+<div class="container-fluid">
+  <div
+    class="alert alert-danger mt-2 p-2 text-center text-dark"
+    *ngIf="errorMessage != null"
+  >
+    {{ errorMessage }}
+  </div>
+  <div class="row">
+    <div>
+      <label class="text-dark">Email</label>
+      <input
+        class="form-control"
+        name="listname"
+        type="text"
+        [(ngModel)]="user.email"
+        required
+      />
+    </div>
+    <div>
+      <label class="text-dark">New Password</label>
+      <input
+        class="form-control"
+        name="listname"
+        type="password"
+        [(ngModel)]="user.password"
+        required
+      />
+    </div>
+  </div>
+  <div class="text-center" >
+    <button class="btn btn-secondary m-2" [class.disabled]="Saving" (click)="goBack()">Go back</button>
+    <button class="btn btn-primary m-2" [class.disabled]="Saving" (click)="saveUser()">Save</button>
+  </div>
+</div>

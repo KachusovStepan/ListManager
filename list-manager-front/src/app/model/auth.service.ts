@@ -3,7 +3,7 @@ import { Observable, from } from "rxjs";
 import { catchError } from "rxjs/operators";
 import { RestDataSource } from "./rest.datasource";
 import { Role } from "./role.model";
-import { IUser } from "./user";
+import { IPostUser, IUser } from "./user";
 
 
 @Injectable({
@@ -41,6 +41,10 @@ export class AuthService {
 
   public getUser(): Observable<IUser | null> {
     return this.datasource.getUser().pipe(catchError(err => from([null])));
+  }
+
+  public updateUser(user: IPostUser): Observable<IPostUser | null> {
+    return this.datasource.updateUser(user).pipe(catchError(err => from([null])));
   }
 
   public getRoles(): Observable<Role[] | null> {

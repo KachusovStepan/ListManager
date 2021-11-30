@@ -5,11 +5,13 @@ import { RouterModule } from "@angular/router";
 import { AuthComponent } from "./auth/auth.component";
 import { AdminRepository} from "../model/admin.repository";
 import { UserComponent } from "./main/user.component";
+import { UserEditComponent } from "./user-edit/user-edit.component";
 import { AdminComponent } from "./admin/admin.component";
 import { AuthGuard } from "./auth.guard";
 import { RegisterComponent } from "./register/register.component";
 
 let routing = RouterModule.forChild([
+  { path: "user-edit", component: UserEditComponent },
   { path: "auth", component: AuthComponent },
   { path: "register", component: RegisterComponent },
   { path: "main", component: UserComponent,
@@ -24,6 +26,6 @@ let routing = RouterModule.forChild([
     // ModelModule
   ],
   providers: [AuthGuard, AdminRepository],
-  declarations: [AuthComponent, UserComponent, AdminComponent, RegisterComponent]
+  declarations: [AuthComponent, UserComponent, AdminComponent, RegisterComponent, UserEditComponent]
 })
 export class UserModule { }

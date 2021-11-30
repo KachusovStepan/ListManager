@@ -17,7 +17,8 @@
         <h3>Email: {{ user ? user.email : "Not loaded" }}</h3>
         <h3>You have {{ user ? user.lists?.length : "Not loaded" }} lists</h3>
       </div>
-      <button class="btn btn-secondary" routerLink="/">Go to Main Page</button>
+      <button class="btn btn-secondary m-2" routerLink="/">Go to Main Page</button>
+      <button class="btn btn-secondary m-2" routerLink="/user/user-edit">Edit Profile</button>
     </div>
   </div>
 </div>
