@@ -64,13 +64,13 @@ public class UsersController {
             @RequestParam(value = "roleId", defaultValue="", required = false) Long roleId
     ) {
         if (principal == null) {
-            log.info("Principal == null");
+            log.warn("Principal == null");
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         String userName = principal.getName();
         User user = this.userService.getUser(userName);
         if (user == null) {
-            log.info("user with name " + userName + " not found in db");
+            log.warn("user with name " + userName + " not found in db");
             return ResponseEntity.notFound().build();
         }
         if (user.getRoles().stream().noneMatch(r -> r.getName().equals("ROLE_ADMIN"))) {
@@ -104,13 +104,13 @@ public class UsersController {
             @RequestParam(value = "categoryName", defaultValue="", required = false) String categoryName
     ) {
         if (principal == null) {
-            log.info("Principal == null");
+            log.warn("Principal == null");
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         String userName = principal.getName();
         User user = this.userService.getUser(userName);
         if (user == null) {
-            log.info("user with name " + userName + " not found in db");
+            log.warn("user with name " + userName + " not found in db");
             return ResponseEntity.notFound().build();
         }
         if (user.getRoles().stream().noneMatch(r -> r.getName().equals("ROLE_ADMIN"))) {
