@@ -1,9 +1,24 @@
-<div class="container-fluid">
-  <div class="bg-info p-2 text-white text-center">
-    <h3>User home page</h3>
-    <h3>Name: {{ user ? user.username : "Not loaded" }}</h3>
-    <h3>Email: {{ user ? user.email : "Not loaded" }}</h3>
-    <h3>You have {{ user ? user.lists?.length : "Not loaded" }} lists</h3>
-    <button class="btn btn-secondary m-1" routerLink="/">Go to Main Page</button>
+<div class="container-fluid full-screen">
+  <div class="row h-20">
+    <div class="col bg-dark text-white">
+      <h1>User Profile</h1>
+      <!-- <a class="navbar-brand">List Manager</a> -->
+    </div>
+  </div>
+  <div class="row h-80">
+    <div class="col bg-dark p-2 text-white text-center">
+      <div class="card bg-dark m-0">
+        <img src="../../../assets/images/bg.jpeg" alt="images" class="w-100" >
+        <h1>{{ user ? user.username : "Not loaded" }}</h1>
+        <div class="roles">
+          <p *ngFor="let roleId of UserRoles" class="m-2 bg-primary role" >{{RoleTitleById(roleId)}}</p>
+        </div>
+        <p>List Manager User</p>
+        <h3>Email: {{ user ? user.email : "Not loaded" }}</h3>
+        <h3>You have {{ user ? user.lists?.length : "Not loaded" }} lists</h3>
+      </div>
+      <button class="btn btn-secondary m-2" routerLink="/">Go to Main Page</button>
+      <button class="btn btn-secondary m-2" routerLink="/user/user-edit">Edit Profile</button>
+    </div>
   </div>
 </div>

@@ -7,3 +7,13 @@ export interface IUser {
   roles?: number[];
   lists?: number[];
 }
+
+export interface IPostUser {
+  id?: number;
+  username?: string;
+  password?: string;
+  email?: string;
+  roles?: number[];
+  lists?: number[];
+}
+

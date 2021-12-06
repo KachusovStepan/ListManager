@@ -129,7 +129,7 @@ public class UserController {
 
     ) {
         if (principal == null) {
-            log.info("Principal == null");
+            log.warn("Principal == null");
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         String userName = principal.getName();
@@ -154,7 +154,7 @@ public class UserController {
     @Transactional
     ResponseEntity<ItemListItemVerboseToGetDto> saveUserList(Principal principal, @RequestBody ItemList toSave) {
         if (principal == null) {
-            log.info("Principal == null");
+            log.warn("Principal == null");
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         String userName = principal.getName();
@@ -188,5 +188,33 @@ public class UserController {
         userRepository.save(user);
         ItemListItemVerboseToGetDto res = mapper.map(toSave, ItemListItemVerboseToGetDto.class);
         return ResponseEntity.ok().body(res);
+    }
+
+    @PostMapping("user")
+    @Transactional
+    ResponseEntity<UserToGetDto> updateUser(Principal principal, @RequestBody UserToPostDto userToPostDto) {
+        if (principal == null) {
+            log.warn("Principal == null");
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        User user = userService.getUser(principal.getName());
+        if (userToPostDto.getUsername() != null && !user.getUsername().equals(userToPostDto.getUsername())) {
+            if (userRepository.existsByUsername(userToPostDto.getUsername())) {
+                return new ResponseEntity<>(HttpStatus.CONFLICT);
+            }
+            user.setUsername(userToPostDto.getUsername());
+        }
+        if (userToPostDto.getEmail() != null) {
+            user.setEmail(userToPostDto.getEmail());
+        }
+        if (userToPostDto.getPassword() != null && !userToPostDto.getPassword().isEmpty()) {
+            user.setPassword(userToPostDto.getPassword());
+            User savedUser = userService.saveUser(user);
+            UserToGetDto userToGetDto = mapper.map(savedUser, UserToGetDto.class);
+            return ResponseEntity.ok().body(userToGetDto);
+        }
+        User savedUser = userRepository.save(user);
+        UserToGetDto userToGetDto = mapper.map(savedUser, UserToGetDto.class);
+        return ResponseEntity.ok().body(userToGetDto);
     }
 }

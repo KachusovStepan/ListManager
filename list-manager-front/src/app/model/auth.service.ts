@@ -2,7 +2,8 @@ import { Injectable } from "@angular/core";
 import { Observable, from } from "rxjs";
 import { catchError } from "rxjs/operators";
 import { RestDataSource } from "./rest.datasource";
-import { IUser } from "./user";
+import { Role } from "./role.model";
+import { IPostUser, IUser } from "./user";
 
 
 @Injectable({
@@ -40,5 +41,13 @@ export class AuthService {
 
   public getUser(): Observable<IUser | null> {
     return this.datasource.getUser().pipe(catchError(err => from([null])));
+  }
+
+  public updateUser(user: IPostUser): Observable<IPostUser | null> {
+    return this.datasource.updateUser(user).pipe(catchError(err => from([null])));
+  }
+
+  public getRoles(): Observable<Role[] | null> {
+    return this.datasource.getRoles().pipe(catchError(err => from([null])));
   }
 }
