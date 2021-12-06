@@ -84,7 +84,7 @@ public class UserController {
         log.info("Principal.Name == " + userName);
         User user = userService.getUser(userName);
         if (user == null) {
-            log.info("user not found in db");
+            log.warn("user not found in db");
             return ResponseEntity.notFound().build();
         }
 
@@ -104,7 +104,7 @@ public class UserController {
         String userName = principal.getName();
         User user = userService.getUser(userName);
         if (user == null) {
-            log.info("user with name " + userName + " not found in db");
+            log.warn("user with name " + userName + " not found in db");
             return ResponseEntity.notFound().build();
         }
         if (!sortBy.equals("category") && !sortBy.equals("name") && !sortBy.equals("id")) {
@@ -135,7 +135,7 @@ public class UserController {
         String userName = principal.getName();
         User user = this.userService.getUser(userName);
         if (user == null) {
-            log.info("user with name " + userName + " not found in db");
+            log.warn("user with name " + userName + " not found in db");
             return ResponseEntity.notFound().build();
         }
         if (user.getLists().stream().noneMatch(l -> l.getId() == itemListId)) {
@@ -160,7 +160,7 @@ public class UserController {
         String userName = principal.getName();
         User user = this.userService.getUser(userName);
         if (user == null) {
-            log.info("user with name " + userName + " not found in db");
+            log.warn("user with name " + userName + " not found in db");
             return ResponseEntity.notFound().build();
         }
         // check if it belongs to
