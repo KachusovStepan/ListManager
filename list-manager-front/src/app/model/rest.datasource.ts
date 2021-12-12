@@ -24,7 +24,7 @@ export class RestDataSource {
   public user: IUser | null = null;
 
   public constructor(private http: HttpClient) {
-    console.log("RestDataSource INIT");
+    // console.log("RestDataSource INIT");
     this.baseUrl = `${PROTOCOL}://${location.hostname}:${PORT}/`;
   }
 
@@ -39,8 +39,8 @@ export class RestDataSource {
 
   private tokenExpiresLessThan(token: string, sec: number) {
     let tokenExpAt = (JSON.parse(atob(token.split('.')[1]))).exp;
-    console.log(`Access token exp at (ts): ${tokenExpAt}`);
-    console.log(`Now : ${Math.round(Date.now() / 1000)}`);
+    // console.log(`Access token exp at (ts): ${tokenExpAt}`);
+    // console.log(`Now : ${Math.round(Date.now() / 1000)}`);
 
     return (tokenExpAt - Math.round(Date.now() / 1000)) < sec;
   }
@@ -49,17 +49,17 @@ export class RestDataSource {
     return this.http.get<any>(
       this.baseUrl + "api/token/refresh", this.getRefreshOptions()
     ).pipe(map(response => {
-      console.log("REST DATASOURCE: refresh access_token: ");
-      console.log(response);
+      // console.log("REST DATASOURCE: refresh access_token: ");
+      // console.log(response);
       this.auth_token = response.access_token ? response.access_token : null;
       this.refresh_token = response.refresh_token ? response.refresh_token : null;
-      console.log("auth_token: " + this.auth_token);
-      console.log("refresh_token: " + this.refresh_token);
+      // console.log("auth_token: " + this.auth_token);
+      // console.log("refresh_token: " + this.refresh_token);
       if (this.auth_token) {
-        console.log(`auth_token exp at: ${new Date(this.tokenExpiresTime(this.auth_token))}`)
+        // console.log(`auth_token exp at: ${new Date(this.tokenExpiresTime(this.auth_token))}`)
       }
       if (this.refresh_token) {
-        console.log(`refresh_token exp at: ${new Date(this.tokenExpiresTime(this.refresh_token))}`)
+        // console.log(`refresh_token exp at: ${new Date(this.tokenExpiresTime(this.refresh_token))}`)
       }
       return this.auth_token != null;
     }));
@@ -129,13 +129,13 @@ export class RestDataSource {
   }
 
   public updateUser(user: IPostUser): Observable<IUser | null>  {
-    console.log("REST DATASOURCE: saving user");
+    // console.log("REST DATASOURCE: saving user");
     let url = this.baseUrl + "api/user/user";
     return this.refreshTokenIfNeeded().pipe(flatMap(succ => {
       return this.http.post<IUser>(url, user, this.getOptions())
         .pipe(map(response => {
-          console.log("REST DATASOURCE: response");
-          console.log(response);
+          // console.log("REST DATASOURCE: response");
+          // console.log(response);
           this.user = response;
           return response;
         }));
@@ -143,13 +143,13 @@ export class RestDataSource {
   }
 
   public saveUsersList(list: List): Observable<List | null> {
-    console.log("REST DATASOURCE: saving list");
+    // console.log("REST DATASOURCE: saving list");
     let url = this.baseUrl + "api/user/lists";
     return this.refreshTokenIfNeeded().pipe(flatMap(succ => {
       return this.http.post<List>(url, list, this.getOptions())
         .pipe(map(response => {
-          console.log("REST DATASOURCE: response");
-          console.log(response);
+          // console.log("REST DATASOURCE: response");
+          // console.log(response);
           return response;
         }));
     }));
@@ -178,19 +178,19 @@ export class RestDataSource {
     return this.http.post<any>(this.baseUrl + "api/login", {
       username: user, password: pass
     }).pipe(map(response => {
-      console.log("REST DATASOURCE: repsonse: ");
-      console.log(response);
+      // console.log("REST DATASOURCE: repsonse: ");
+      // console.log(response);
       // console.log(response.status);
       // this.auth_token = null;
       this.auth_token = response.access_token ? response.access_token : null;
       this.refresh_token = response.refresh_token ? response.refresh_token : null;
-      console.log("auth_token: " + this.auth_token);
-      console.log("refresh_token: " + this.refresh_token);
+      // console.log("auth_token: " + this.auth_token);
+      // console.log("refresh_token: " + this.refresh_token);
       if (this.auth_token) {
-        console.log(`auth_token exp at: ${new Date(this.tokenExpiresTime(this.auth_token))}`)
+        // console.log(`auth_token exp at: ${new Date(this.tokenExpiresTime(this.auth_token))}`)
       }
       if (this.refresh_token) {
-        console.log(`refresh_token exp at: ${new Date(this.tokenExpiresTime(this.refresh_token))}`)
+        // console.log(`refresh_token exp at: ${new Date(this.tokenExpiresTime(this.refresh_token))}`)
       }
       // NEW:
       if (this.auth_token) {
@@ -212,8 +212,8 @@ export class RestDataSource {
       roles: [],
     }
     return this.http.post<IUser>(this.baseUrl + "api/register", user).pipe(map(response => {
-      console.log("REST DATASOURCE: repsonse: ");
-      console.log(response);
+      // console.log("REST DATASOURCE: repsonse: ");
+      // console.log(response);
       this.user = response;
       return response.id !== undefined;
     })).pipe(catchError(err => from([false])));

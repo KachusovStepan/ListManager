@@ -32,7 +32,7 @@ export class AdminRepository {
   public userPageSize: number = 0;
 
   constructor(private dataSource: RestDataSource) {
-    console.log("AdminRepository INIT");
+    // console.log("AdminRepository INIT");
     this.setUpData();
     this.requestUsers();
   }
@@ -44,8 +44,8 @@ export class AdminRepository {
       this.allCategories = data[2];
       this.roles = data[3];
 
-      console.log(`Requesting init data`);
-      console.log(data);
+      // console.log(`Requesting init data`);
+      // console.log(data);
       // this.requestLists().subscribe(
       //   succ => console.log(`requestsed: success: ${succ}`)
       // );
@@ -66,7 +66,7 @@ export class AdminRepository {
       userId: number, listName = "", categoryName: string = "", sortBy: string = "id",
       pageIndex: number = 0, pageSize: number = 4): Observable<boolean> {
     if (this.user === null) {
-      console.log("$> requestLists: user not set");
+      // console.log("$> requestLists: user not set");
       return from([false]);
     }
     return this.dataSource.getListsWithParamsUsingUserId(userId, listName, categoryName, sortBy, pageIndex, pageSize).pipe(
@@ -132,14 +132,14 @@ export class AdminRepository {
   public saveList(list: List): Observable<boolean> {
     return this.dataSource.saveUsersList(list).pipe(map(result => {
       if (!this.user) {
-        console.log("REST DATASOURCE: user not set!!!");
+        // console.log("REST DATASOURCE: user not set!!!");
         return false;
       }
       if (result === null) {
         return false;
       }
-      console.log("Saved list");
-      console.log(result);
+      // console.log("Saved list");
+      // console.log(result);
       // TODO: make sure it will be displayed
       // this.lists.push(result);
       return true;

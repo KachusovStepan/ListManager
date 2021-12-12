@@ -31,7 +31,7 @@ export class MainPageComponent {
   }
 
   public logOut() {
-    console.log("log out");
+    // console.log("log out");
     this.auth.clear();
     this.router.navigate(["/"]);
   }

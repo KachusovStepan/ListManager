@@ -42,10 +42,10 @@ export class ListEditComponent {
   }
 
   public get Items(): ListItem[] {
-    console.log("List edit: items");
-    console.log(this.listManager.list.items);
-    console.log("List edit: itemStatuses");
-    console.log(this.ItemStatuses)
+    // console.log("List edit: items");
+    // console.log(this.listManager.list.items);
+    // console.log("List edit: itemStatuses");
+    // console.log(this.ItemStatuses)
     return this.listManager.list.items
     // .map(i => {
     //   let newStatus = new ItemStatus();
@@ -86,7 +86,7 @@ export class ListEditComponent {
   }
 
   public saveList() {
-    console.log(this.listManager.list);
+    // console.log(this.listManager.list);
     if (!this.listManager.list.name || !this.listManager.list.category.name) {
       this.errorMessage = "Name and Category are requered fields";
       return;

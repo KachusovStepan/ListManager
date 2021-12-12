@@ -75,7 +75,7 @@ export class StaticDataSource {
     let totalPageCount = Math.ceil(totalCount / pageSize);
     let start = pageSize * (pageIndex);
     let end = Math.min(totalCount, start + pageSize);
-    console.log(` > getListsWithParams: (${start}, ${end})`);
+    // console.log(` > getListsWithParams: (${start}, ${end})`);
     let data = this.listToGetDtos.slice(start, end);
     let page = new CustomPage<ListToGetDto>(totalCount, totalPageCount, pageIndex, pageSize, data);
     return from([page]);
@@ -90,15 +90,15 @@ export class StaticDataSource {
       roleId: number | null = null,
       sortBy: string = "id", pageIndex: number = 0,
       pageSize: number = 8): Observable<CustomPage<IUser>> {
-        console.log("request users");
+        // console.log("request users");
     let totalCount = this.users.length;
     let totalPageCount = Math.ceil(totalCount / pageSize);
     let start = pageSize * (pageIndex);
     let end = Math.min(totalCount, start + pageSize);
-    console.log(` > getUsersWithParams: (${start}, ${end})`);
+    // console.log(` > getUsersWithParams: (${start}, ${end})`);
     let data = this.users.slice(start, end);
     let page = new CustomPage<IUser>(totalCount, totalPageCount, pageIndex, pageSize, data);
-    console.log(data);
+    // console.log(data);
     return from([page]);
   }
 
