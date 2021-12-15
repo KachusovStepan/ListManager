@@ -6,6 +6,8 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Objects;
+
 
 @Entity
 public class ItemList implements Comparable<ItemList> {
@@ -87,7 +89,7 @@ public class ItemList implements Comparable<ItemList> {
 
     @Override
     public int compareTo(ItemList other) {
-        if (name == other.getName()) {
+        if (Objects.equals(name, other.getName())) {
             return 0;
         }
         if (name == null) {

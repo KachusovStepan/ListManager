@@ -1,6 +1,5 @@
 package com.example.listmanager.services;
 
-
 import com.example.listmanager.model.*;
 
 import java.util.List;

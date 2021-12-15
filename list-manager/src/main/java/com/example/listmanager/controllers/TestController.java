@@ -1,6 +1,5 @@
 package com.example.listmanager.controllers;
 
-
 import com.example.listmanager.model.Category;
 import com.example.listmanager.model.ItemList;
 import com.example.listmanager.model.User;
@@ -21,18 +20,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 
 @RestController
 @RequestMapping("/api/test")
 public class TestController {
-    private static final Logger log = LoggerFactory.getLogger(TestController.class);
     private final IUserService userService;
     private final IListService listService;
     private final ItemListRepository itemListRepository;
     private final UserRepository userRepository;
-    private ModelMapper mapper;
+    private final ModelMapper mapper;
 
     public TestController(
             IUserService userService, IListService listService, ModelMapper mapper,
@@ -53,7 +53,7 @@ public class TestController {
     @GetMapping("/users/{userId}/lists/{listId}")
     ResponseEntity<ItemListToGetDto> getUserList(@PathVariable Long userId, @PathVariable Long listId) {
         User user = userRepository.getById(userId);
-        Optional<ItemList> oil = user.getLists().stream().filter(l -> l.getId() == listId).findFirst();
+        Optional<ItemList> oil = user.getLists().stream().filter(l -> Objects.equals(l.getId(), listId)).findFirst();
         if (oil.isEmpty()) {
             return ResponseEntity.notFound().build();
         }

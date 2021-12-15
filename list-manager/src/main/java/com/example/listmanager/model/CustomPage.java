@@ -4,15 +4,12 @@ import lombok.Data;
 
 import java.util.List;
 
+
 @Data
 public class CustomPage<T> {
     private int totalCount;
     private int totalPageCount;
-
     private int pageIndex;
-
-
-
     private int pageSize;
     private List<T> data;
 

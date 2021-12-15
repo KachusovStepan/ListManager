@@ -5,17 +5,13 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
-
 import com.example.listmanager.repos.ItemListRepository;
 import com.example.listmanager.repos.UserRepository;
 import com.example.listmanager.services.IListService;
 import com.example.listmanager.services.IUserService;
-import org.hibernate.annotations.NotFound;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.listmanager.model.*;
@@ -28,15 +24,13 @@ public class ListController {
     private final IUserService userService;
     private final IListService listService;
     private final ItemListRepository itemListRepository;
-    private final UserRepository userRepository;
 
     public ListController(
             IUserService userService, IListService listService,
-            ItemListRepository itemListRepository, UserRepository userRepository) {
+            ItemListRepository itemListRepository) {
         this.userService = userService;
         this.listService = listService;
         this.itemListRepository = itemListRepository;
-        this.userRepository = userRepository;
     }
 
     @GetMapping("itemstatuses")
@@ -75,7 +69,7 @@ public class ListController {
     ResponseEntity<ItemList> newItemList(@RequestBody ItemList newItemList) {
         ItemList savedItemList = itemListRepository.save(newItemList);
         URI location = URI.create(String.format("api/lists/%d", savedItemList.getId()));
-        log.info("newItemList created at: " + location.toString());
+        log.info("newItemList created at: " + location);
         return ResponseEntity.created(location).body(savedItemList);
     }
 
