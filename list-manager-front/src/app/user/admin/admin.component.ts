@@ -40,7 +40,7 @@ export class AdminComponent {
       private location: Location,
       private repository: AdminRepository,
       private auth: AuthService) {
-    console.log("AdminComponent initialized");
+    // console.log("AdminComponent initialized");
     this.auth.getUser().subscribe(data => {
       if (!data) {
         data = {
@@ -95,20 +95,20 @@ export class AdminComponent {
   }
 
   public refreshUsers() {
-    console.log(" > refresh users");
-    console.log("selectedRole: ");
-    console.log(this.selectedRoleId);
+    // console.log(" > refresh users");
+    // console.log("selectedRole: ");
+    // console.log(this.selectedRoleId);
     // console.log(this.selectedRole?.id);
-    console.log("id");
-    console.log(this.selectedUserPage - 1);
-    console.log(this.usersPerPage);
+    // console.log("id");
+    // console.log(this.selectedUserPage - 1);
+    // console.log(this.usersPerPage);
     this.requestingData = true;
     this.repository.requestUsers(
         this.selectedRoleId, "id",
         this.selectedUserPage - 1, this.usersPerPage)
       .subscribe(success => {
         this.requestingData = false;
-        console.log(`Users requestsed, success: ${success}`);
+        // console.log(`Users requestsed, success: ${success}`);
       });
   }
 
@@ -148,7 +148,7 @@ export class AdminComponent {
 
 
   public changeCategory(categoryName: string) {
-    console.log(` > changeCategory: ${categoryName}`);
+    // console.log(` > changeCategory: ${categoryName}`);
     this.selectedCategoryName = categoryName;
     this.selectedListPage = 1;
     this.refreshLists();
@@ -167,7 +167,7 @@ export class AdminComponent {
         this.selectedListPage - 1, this.listsPerPage)
       .subscribe(success => {
         this.requestingData = false;
-        console.log(`Lists requestsed, success: ${success}`);
+        // console.log(`Lists requestsed, success: ${success}`);
       });
   }
 
@@ -181,7 +181,7 @@ export class AdminComponent {
       this.requestingData = true;
       this.repository.deleteListById(list.id).subscribe(succ => {
         this.requestingData = false;
-        console.log(`deleteList: success: ${succ}`);
+        // console.log(`deleteList: success: ${succ}`);
       });
     }
 

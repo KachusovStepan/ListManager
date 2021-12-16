@@ -18,7 +18,7 @@ export class AuthComponent {
       private location: Location,
       private auth: AuthService,
     ) {
-    console.log("AuthComponent initialized");
+    // console.log("AuthComponent initialized");
 
   }
 
@@ -26,8 +26,8 @@ export class AuthComponent {
     if (form.valid) {
       this.auth.authenticate(this.username, this.password)
         .subscribe(response => {
-          console.log("Response: ");
-          console.log(response);
+          // console.log("Response: ");
+          // console.log(response);
           if (response) {
             this.router.navigateByUrl("/user/main");
           } else {

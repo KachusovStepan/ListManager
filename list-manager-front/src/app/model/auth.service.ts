@@ -11,7 +11,7 @@ import { IPostUser, IUser } from "./user";
 })
 export class AuthService {
   public constructor(private datasource: RestDataSource) {
-    console.log("AuthService INIT");
+    // console.log("AuthService INIT");
   }
 
   public authenticate(username: string, password: string): Observable<boolean> {

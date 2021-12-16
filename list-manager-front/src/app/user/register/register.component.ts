@@ -18,7 +18,7 @@ export class RegisterComponent {
       private location: Location,
       private auth: AuthService,
     ) {
-    console.log("RegisterComponent initialized");
+    // console.log("RegisterComponent initialized");
 
   }
 
@@ -30,8 +30,8 @@ export class RegisterComponent {
     if (form.valid) {
       this.auth.register(this.username, this.password)
         .subscribe(response => {
-          console.log("Response: ");
-          console.log(response);
+          // console.log("Response: ");
+          // console.log(response);
           if (response) {
             this.router.navigateByUrl("/user/main");
           } else {

@@ -18,9 +18,9 @@ export class UserComponent {
       private router: Router,
       private location: Location,
       private auth: AuthService) {
-    console.log("UserComponent initialized");
+    // console.log("UserComponent initialized");
     this.requestAll().subscribe(data => {
-      console.log(data);
+      // console.log(data);
       if (!data[0]) {
         data[0] = {
           id: 0,

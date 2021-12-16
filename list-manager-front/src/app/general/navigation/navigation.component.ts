@@ -34,8 +34,8 @@ export class NavigationComponent implements OnInit {
   public ngOnInit() {
     this.setActiveLink(this.activeLink);
     this.disableLinks(this.disabledLinks);
-    console.log("Navigation:");
-    console.log(this.navigationOptions);
+    // console.log("Navigation:");
+    // console.log(this.navigationOptions);
   }
 
   private navigationOptions: INavigationOption[] = [

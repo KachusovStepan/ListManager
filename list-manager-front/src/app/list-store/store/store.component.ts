@@ -50,19 +50,19 @@ export class StoreComponent {
   }
 
   public refreshLists() {
-    console.log("> refreshLists");
+    // console.log("> refreshLists");
     this.requestingLists = true;
     this.repository.requestLists(this.listName, this.selectedCategory ?? "", "id", this.selectedPage - 1, this.listsPerPage)
       .subscribe(success => {
         this.requestingLists = false;
-        console.log(`Lists requested, success: ${success}`);
-        console.log(this.repository.getRawLists());
+        // console.log(`Lists requested, success: ${success}`);
+        // console.log(this.repository.getRawLists());
       })
   }
 
   public get pageCount(): number {
     let pcount = this.repository.totalPageCount;
-    console.log("totalPageCount: ", pcount);
+    // console.log("totalPageCount: ", pcount);
     return pcount;
   }
 

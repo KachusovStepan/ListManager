@@ -24,7 +24,7 @@ export class ListRepository {
   public pageSize: number = 0;
 
   constructor(private dataSource: RestDataSource) {
-    console.log("ListRepository INIT");
+    // console.log("ListRepository INIT");
     // this.requestAll().subscribe(data => {
     //   this.lists = data[0];
     //   this.categories = data[0].map((l: List) => l.category)
@@ -46,18 +46,18 @@ export class ListRepository {
       this.allCategories = data[2];
 
       // LOG
-      console.log("Get data from datasource:");
-      console.log("User");
-      console.log(this.user);
-      console.log("allCategories");
-      console.log(this.allCategories);
-      console.log("ItemStatuses");
-      console.log(this.itemStatuses);
+      // console.log("Get data from datasource:");
+      // console.log("User");
+      // console.log(this.user);
+      // console.log("allCategories");
+      // console.log(this.allCategories);
+      // console.log("ItemStatuses");
+      // console.log(this.itemStatuses);
 
 
-      console.log(`Requesting lists`);
+      // console.log(`Requesting lists`);
       this.requestLists().subscribe(
-        succ => console.log(`requestsed lists: success: ${succ}`)
+        succ => {} //console.log(`requestsed lists: success: ${succ}`)
       );
     });
   }
@@ -75,7 +75,7 @@ export class ListRepository {
       listName: string = "", categoryName: string = "", sortBy: string = "id",
       pageIndex: number = 0, pageSize: number = 4): Observable<boolean> {
     if (this.user === null) {
-      console.log("$> requestLists: user not set");
+      // console.log("$> requestLists: user not set");
       return from([false]);
     }
     return this.dataSource.getListsWithParams(listName, categoryName, sortBy, pageIndex, pageSize).pipe(
@@ -90,8 +90,8 @@ export class ListRepository {
           newList.category = this.allCategories.find(l => l.id == list.category) ?? new Category();
           this.lists.push(newList);
         }
-        console.log(`ListRepository: got list data ${this.lists.length}`);
-        console.log(this.lists.length);
+        // console.log(`ListRepository: got list data ${this.lists.length}`);
+        // console.log(this.lists.length);
         return true;
       })
     )
@@ -126,14 +126,14 @@ export class ListRepository {
   public saveList(list: List): Observable<boolean> {
     return this.dataSource.saveUsersList(list).pipe(map(result => {
       if (!this.user) {
-        console.log("REST DATASOURCE: user not set!!!");
+        // console.log("REST DATASOURCE: user not set!!!");
         return false;
       }
       if (result === null) {
         return false;
       }
-      console.log("Saved list");
-      console.log(result);
+      // console.log("Saved list");
+      // console.log(result);
       // TODO: make sure it will be displayed
       // this.lists.push(result);
       return true;
