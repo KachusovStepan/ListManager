@@ -16,27 +16,24 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+
 @Configuration
 public class LoadDatabase {
     private static final Logger log = LoggerFactory.getLogger(LoadDatabase.class);
 
-    private static Random random = new Random();
+    private static final Random random = new Random();
     public static <T> T AnyItem(List<T> arr) {
         int index = random.nextInt(arr.size());
         T item = arr.get(index);
         return item;
     }
 
-    public static ItemList GenerateItemList(
-            IListService listService, int count, User user,
+    public static ItemList GenerateItemList( int count, User user,
             List<Category> categories, List<ItemStatus> statuses, List<String> tasks, List<String> listNames) {
         List<Item> items = new ArrayList<>();
         for(int i = 0; i < count; i++) {
-//            items.add(listService.saveItem(new Item(i, random.nextInt(10), AnyItem(tasks), AnyItem(statuses))));
             items.add(new Item(i, random.nextInt(10), AnyItem(tasks), AnyItem(statuses)));
         }
-//        ItemList list = listService.saveList(new ItemList(AnyItem(listNames), AnyItem(categories), items));
-//        return list;
         return new ItemList(AnyItem(listNames), user, AnyItem(categories), items);
     }
 
@@ -79,22 +76,20 @@ public class LoadDatabase {
                     "To Do", "Agenda", "Classes", "Team meeting"
             );
 
-            List<User> users = Arrays.asList(
-                    userService.saveUser(new User("Adam", "adam@example.com","1234"))
+            List<User> users = List.of(
+                    userService.saveUser(new User("Adam", "adam@example.com", "1234"))
             );
 
-//            ItemList il = GenerateItemList(listService, 10, categories, itemStatuses, taskNames, listNames);
             List<ItemList> itemLists = Arrays.asList(
-                    GenerateItemList(listService, 10, users.get(0), categories, itemStatuses, taskNames, listNames),
-                    GenerateItemList(listService, 7, users.get(0), categories, itemStatuses, taskNames, listNames),
-                    GenerateItemList(listService, 4, users.get(0), categories, itemStatuses, taskNames, listNames),
-                    GenerateItemList(listService, 12, users.get(0), categories, itemStatuses, taskNames, listNames),
-                    GenerateItemList(listService, 2, users.get(0), categories, itemStatuses, taskNames, listNames)
+                    GenerateItemList(10, users.get(0), categories, itemStatuses, taskNames, listNames),
+                    GenerateItemList(7, users.get(0), categories, itemStatuses, taskNames, listNames),
+                    GenerateItemList(4, users.get(0), categories, itemStatuses, taskNames, listNames),
+                    GenerateItemList(12, users.get(0), categories, itemStatuses, taskNames, listNames),
+                    GenerateItemList(2, users.get(0), categories, itemStatuses, taskNames, listNames)
             );
 
             users.get(0).getLists().addAll(itemLists);
-            itemLists.forEach(il -> listService.saveList(il));
-//            userService.saveUser(users.get(0));
+            itemLists.forEach(listService::saveList);
             userRepository.save(users.get(0));
 
             users.forEach(u -> userService.addRoleToUser(u.getUsername(), "ROLE_USER"));

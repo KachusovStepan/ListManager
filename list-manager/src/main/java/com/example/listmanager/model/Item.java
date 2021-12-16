@@ -1,9 +1,7 @@
 package com.example.listmanager.model;
 
-
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 import javax.persistence.*;
+
 
 @Entity
 public class Item {

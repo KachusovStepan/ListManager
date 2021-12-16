@@ -4,7 +4,6 @@ import com.example.listmanager.model.Role;
 import com.example.listmanager.model.User;
 import com.example.listmanager.repos.RoleRepository;
 import com.example.listmanager.repos.UserRepository;
-// import org.apache.logging.slf4j.SLF4JLogger;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,6 +15,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
 
 @Service
 @Transactional
@@ -61,7 +61,7 @@ public class UserServiceImpl implements IUserService, UserDetailsService {
     public void addRoleToUser(String username, String roleName) {
         User user = userRepository.findByUsername(username);
         Role role = roleRepository.findByName(roleName);
-        user.getRoles().add(role); // not explicitly saving because transactional
+        user.getRoles().add(role);
     }
 
     @Override

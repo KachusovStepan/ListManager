@@ -7,7 +7,6 @@ import com.example.listmanager.model.User;
 import com.example.listmanager.model.dto.ItemListItemVerboseToGetDto;
 import com.example.listmanager.model.dto.UserToGetDto;
 import com.example.listmanager.repos.*;
-import com.example.listmanager.services.IListService;
 import com.example.listmanager.services.IUserService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -23,6 +22,7 @@ import javax.transaction.Transactional;
 import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
+
 
 @RequestMapping("/api/users")
 @RestController

@@ -9,7 +9,6 @@ import com.example.listmanager.model.User;
 import com.example.listmanager.model.dto.UserToGetDto;
 import com.example.listmanager.model.dto.UserToPostDto;
 import com.example.listmanager.repos.*;
-import com.example.listmanager.services.IListService;
 import com.example.listmanager.services.IUserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.modelmapper.ModelMapper;
@@ -33,6 +32,7 @@ import java.util.stream.Collectors;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
 
 @RequestMapping("/api")
 @RestController

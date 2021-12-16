@@ -1,10 +1,10 @@
 package com.example.listmanager.model.dto;
 
-
 import com.example.listmanager.model.Item;
 import lombok.Data;
 
 import java.util.List;
+
 
 @Data
 public class ItemListItemVerboseToGetDto {

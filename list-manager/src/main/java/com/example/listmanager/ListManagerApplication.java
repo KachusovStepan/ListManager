@@ -4,7 +4,6 @@ import com.example.listmanager.model.*;
 import com.example.listmanager.model.dto.ItemListItemVerboseToGetDto;
 import com.example.listmanager.model.dto.ItemListToGetDto;
 import com.example.listmanager.model.dto.UserToGetDto;
-import com.example.listmanager.model.dto.UserToPostDto;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
@@ -26,12 +25,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @SpringBootApplication
 @RestController
-//@EnableSwagger2
 public class ListManagerApplication {
 
 	private static List<String> team = new ArrayList<String>();

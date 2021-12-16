@@ -5,16 +5,11 @@ import com.example.listmanager.repos.CategoryRepository;
 import com.example.listmanager.repos.ItemListRepository;
 import com.example.listmanager.repos.ItemRepository;
 import com.example.listmanager.repos.ItemStatusRepository;
-import org.hibernate.cache.spi.support.AbstractReadWriteAccess;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 
 @Service

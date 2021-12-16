@@ -2,6 +2,7 @@ package com.example.listmanager.model.dto;
 
 import lombok.Data;
 
+
 @Data
 public class UserToPostDto {
     private Long id;

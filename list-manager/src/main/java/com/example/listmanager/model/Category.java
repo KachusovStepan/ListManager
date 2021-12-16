@@ -1,10 +1,11 @@
 package com.example.listmanager.model;
 
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.util.Objects;
+
 
 @Entity
 public class Category implements Comparable<Category> {
@@ -15,6 +16,7 @@ public class Category implements Comparable<Category> {
     private String name;
 
     public Category() {}
+
     public Category(String name) {
         this.name = name;
     }
@@ -42,7 +44,7 @@ public class Category implements Comparable<Category> {
 
     @Override
     public int compareTo(Category other) {
-        if (name == other.getName()) {
+        if (Objects.equals(name, other.getName())) {
             return 0;
         }
         if (name == null) {

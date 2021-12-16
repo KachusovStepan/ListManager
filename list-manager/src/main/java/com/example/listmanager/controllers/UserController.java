@@ -1,9 +1,5 @@
 package com.example.listmanager.controllers;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.listmanager.model.*;
 import com.example.listmanager.model.dto.ItemListItemVerboseToGetDto;
 import com.example.listmanager.model.dto.UserToGetDto;
@@ -11,7 +7,6 @@ import com.example.listmanager.model.dto.UserToPostDto;
 import com.example.listmanager.repos.*;
 import com.example.listmanager.services.IListService;
 import com.example.listmanager.services.IUserService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,22 +15,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static java.util.Arrays.stream;
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.http.HttpStatus.FORBIDDEN;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 
 @RequestMapping("/api/user")
@@ -49,7 +34,6 @@ public class UserController {
     private final CategoryRepository categoryRepository;
     private final ItemStatusRepository itemStatusRepository;
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
 
     private final ModelMapper mapper;
 
@@ -62,7 +46,6 @@ public class UserController {
             CategoryRepository categoryRepository,
             ItemStatusRepository itemStatusRepository,
             UserRepository userRepository,
-            RoleRepository roleRepository,
             ModelMapper mapper
     ) {
         this.userService = userService;
@@ -72,7 +55,6 @@ public class UserController {
         this.categoryRepository = categoryRepository;
         this.itemStatusRepository = itemStatusRepository;
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
 
         this.mapper = mapper;
     }
@@ -119,7 +101,6 @@ public class UserController {
                 .map(il -> mapper.map(il, ItemListItemVerboseToGetDto.class)).collect(Collectors.toList());
         CustomPage<ItemListItemVerboseToGetDto> p = new CustomPage<>(itemListToGetDtos, totalCount, totalPageCount, pageIndex, pageSize);
         return ResponseEntity.ok().body(p);
-//        return ResponseEntity.ok().body(itemListToGetDtos);
     }
 
     @DeleteMapping("lists/{itemListId}")
@@ -138,7 +119,7 @@ public class UserController {
             log.warn("user with name " + userName + " not found in db");
             return ResponseEntity.notFound().build();
         }
-        if (user.getLists().stream().noneMatch(l -> l.getId() == itemListId)) {
+        if (user.getLists().stream().noneMatch(l -> Objects.equals(l.getId(), itemListId))) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         ItemList ilToDelete = itemListRepository.getById(itemListId);
@@ -163,9 +144,8 @@ public class UserController {
             log.warn("user with name " + userName + " not found in db");
             return ResponseEntity.notFound().build();
         }
-        // check if it belongs to
         if (toSave.getId() != null) {
-            if (user.getLists().stream().noneMatch(l -> l.getId() == toSave.getId())) {
+            if (user.getLists().stream().noneMatch(l -> Objects.equals(l.getId(), toSave.getId()))) {
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
         }
@@ -175,10 +155,9 @@ public class UserController {
         for (Item item : toSave.getItems()) {
             item.setStatus(itemStatusRepository.findByName(item.getStatus().getName()));
         }
-        // delete item if not present ^
         toSave.setUser(user);
         ItemList savedList = listService.saveList(toSave);
-        if (user.getLists().stream().noneMatch(l -> l.getId() == savedList.getId())) {
+        if (user.getLists().stream().noneMatch(l -> Objects.equals(l.getId(), savedList.getId()))) {
             List<ItemList> userLists = user.getLists();
             userLists.add(savedList);
             user.setLists(userLists);
